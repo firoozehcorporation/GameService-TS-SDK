@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.get = void 0;
 const uuid_1 = require("uuid");
 function get() {
-    return {
+    let statis = {
         // PackageName:,
         // SDKVersion:,
         // VersionName:,
@@ -35,5 +35,6 @@ function get() {
         // GraphicsDeviceVendor:,
         // GraphicsMemorySize:
     };
+    return JSON.stringify(statis);
 }
 exports.get = get;

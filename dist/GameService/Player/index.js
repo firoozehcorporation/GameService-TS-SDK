@@ -16,23 +16,24 @@ exports.Player = void 0;
 const Consts_1 = require("../../Utils/Consts");
 const Logger_1 = require("../../Utils/Logger");
 const axios_1 = __importDefault(require("axios"));
-const Authentication_1 = require("../Authentication");
-const __1 = require("..");
 const uuid_1 = require("uuid");
 class Player {
+    constructor(superThis) {
+        this.superThis = superThis;
+    }
     GetCurrentPlayer() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetCurrentPlayer}`, {
                     headers: {
-                        "x-access-token": Authentication_1.Authentication.gameToken
+                        "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetCurrentPlayer", data);
                 return data.data;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -45,14 +46,14 @@ class Player {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetCurrentPlayer}/${memberId}`, {
                     headers: {
-                        "x-access-token": Authentication_1.Authentication.gameToken
+                        "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetCurrentPlayer", data);
-                return data.data;
+                return data;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -64,19 +65,19 @@ class Player {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.LastLoginInfo}`, {
-                    "game": __1.GameService.ClientID,
-                    "secret": __1.GameService.ClientSecret,
+                    "game": this.superThis.ClientID,
+                    "secret": this.superThis.ClientSecret,
                     "device_id": uuid_1.v4()
                 }, {
                     headers: {
-                        "x-access-token": Authentication_1.Authentication.gameToken
+                        "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetLastLoginMemberInfo", data);
                 return data;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -91,14 +92,14 @@ class Player {
                 // "":input.
                 }, {
                     headers: {
-                        "x-access-token": Authentication_1.Authentication.gameToken
+                        "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("EditCurrentPlayerProfile", data);
                 return data;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -114,14 +115,14 @@ class Player {
                     "new_password": newPassword
                 }, {
                     headers: {
-                        "x-access-token": Authentication_1.Authentication.gameToken
+                        "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("ChangePassword", data);
                 return data.data;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -132,16 +133,17 @@ class Player {
     GetActiveDevices() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Devices}`, {
+                let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Devices}`, {
                     headers: {
-                        "x-access-token": Authentication_1.Authentication.gameToken
+                        "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetActiveDevices", data);
                 return data;
             }
             catch (e) {
-                if (e.response) {
+                console.error(e);
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -154,14 +156,14 @@ class Player {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Devices}/${deviceId}`, {
                     headers: {
-                        "x-access-token": Authentication_1.Authentication.gameToken
+                        "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("RevokeActiveDevice", data);
                 return true;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else

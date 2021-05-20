@@ -35,10 +35,15 @@ exports.Authentication = void 0;
 const Consts_1 = require("../../Utils/Consts");
 const Logger_1 = require("../../Utils/Logger");
 const Statistics = __importStar(require("../../Utils/Statistics"));
-const index_1 = require("../index");
 const uuid_1 = require("uuid");
 const axios_1 = __importDefault(require("axios"));
 class Authentication {
+    constructor(superThis) {
+        this.superThis = superThis;
+        this.userToken = "";
+        this.gameToken = "";
+        this.gameID = "";
+    }
     Login(Email, Password) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -47,14 +52,16 @@ class Authentication {
                     "password": Password,
                     "device_id": uuid_1.v4(),
                 });
-                Logger_1.Log("Login", data);
-                Authentication.userToken = data.token;
-                this.Start();
+                // Log("Login", data);
+                this.userToken = data.token;
+                yield this.Start();
                 return data.token;
             }
             catch (e) {
-                if (e.response) {
-                    throw e.response.data.msg;
+                if (e && e.response) {
+                    if (e.response.data)
+                        throw e.response.data;
+                    throw e.response;
                 }
                 else
                     throw e;
@@ -62,7 +69,7 @@ class Authentication {
         });
     }
     LoginWithToken(Token) {
-        Authentication.userToken = Token;
+        this.userToken = Token;
     }
     SignUp(NickName, Email, Password) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -70,18 +77,18 @@ class Authentication {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Login}`, {
                     "mode": "register",
                     "name": NickName,
-                    "client_id": index_1.GameService.ClientID,
+                    "client_id": this.superThis.ClientID,
                     "email": Email,
                     "password": Password,
                     "device_id": uuid_1.v4(),
                 });
                 Logger_1.Log("SignUp", data);
-                Authentication.userToken = data.token;
-                this.Start();
+                this.userToken = data.token;
+                yield this.Start();
                 return data.token;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -90,21 +97,23 @@ class Authentication {
         });
     }
     CheckSmsStatus() {
-        return true;
+        return __awaiter(this, void 0, void 0, function* () {
+            return true;
+        });
     }
     SendLoginCodeSms(PhoneNumber) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.SMSAuth}`, {
-                    "game": index_1.GameService.ClientID,
-                    "secret": index_1.GameService.ClientSecret,
+                    "game": this.superThis.ClientID,
+                    "secret": this.superThis.ClientSecret,
                     "phone_number": PhoneNumber,
                 });
                 Logger_1.Log("SendLoginCodeSms", data);
                 return true;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -125,7 +134,7 @@ class Authentication {
                 return data.token;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -140,12 +149,12 @@ class Authentication {
                     "device_id": uuid_1.v4(),
                 });
                 Logger_1.Log("LoginAsGuest", data);
-                Authentication.userToken = data.token;
-                this.Start();
+                this.userToken = data.token;
+                yield this.Start();
                 return data.token;
             }
             catch (e) {
-                if (e.response) {
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -157,17 +166,20 @@ class Authentication {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Start}`, {
-                    "game": index_1.GameService.ClientID,
+                    "game": this.superThis.ClientID,
                     "system_info": Statistics.get(),
-                    "secret": index_1.GameService.ClientSecret,
-                    "token": Authentication.userToken
+                    "secret": this.superThis.ClientSecret,
+                    "token": this.userToken
                 });
-                Logger_1.Log("SignUp", data);
-                Authentication.gameToken = data.token;
+                // Log("Start", data);
+                this.gameToken = data.token;
+                this.gameID = data.game._id;
+                yield this.superThis.GSLive.Command.Initilize();
                 return data.token;
             }
             catch (e) {
-                if (e.response) {
+                // if (this.superThis.Verbose) 
+                if (e && e.response) {
                     throw e.response.data.msg;
                 }
                 else
@@ -177,5 +189,3 @@ class Authentication {
     }
 }
 exports.Authentication = Authentication;
-Authentication.userToken = "";
-Authentication.gameToken = "";
