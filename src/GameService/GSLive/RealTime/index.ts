@@ -160,7 +160,7 @@ export class RealTime {
 
     public async SetOrUpdateMemberProperty(name: string, value: string) {
         let data = new RtData();
-        let payloadS = [,,name.length,StringToBuffer(name),]
+        let payloadS = [,,name.length,...StringToBuffer(name),]
 
         let extra = Buffer.alloc(2);
         extra.writeUInt8(0x3);
