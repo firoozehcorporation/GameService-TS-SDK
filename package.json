@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "user1":"ts-node ./test/user1.test.ts",
-    "user2":"ts-node ./test/user2.test.ts"
+    "user1": "ts-node ./test/user1.test.ts",
+    "user2": "ts-node ./test/user2.test.ts",
+    "serialize": "ts-node ./test/serialize.test.ts"
   },
   "author": "Amir Rastegar (FiroozehCorp LTD)",
   "license": "ISC",

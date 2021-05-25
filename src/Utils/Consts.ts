@@ -29,16 +29,11 @@ enum CommandUrls {
     Endpoint = "ws://localhost:3004",
 }
 
-enum TurnBasedUrls {
-    // Endpoint = "wss://command-ws.gamesservice.ir",
-    Endpoint = "ws://localhost:3005",
-}
 
 let Url = {
     Api: ApiUrls,
     DBaaS: DBaaSUrls,
     Command: CommandUrls,
-    TurnBased: TurnBasedUrls,
 }
 
 enum CommandActions {
@@ -78,19 +73,36 @@ enum TurnBasedActions {
     ActionChooseNext = 5,
     ActionLeave = 6,
     ActionVote = 7,
-    ActionComplete = 8,
+    ActionAcceptVote = 8,
     ActionGetUsers = 9,
     ActionCurrentTurnDetail = 12,
     ModifyValue = 13,
     ModifyRoomValue = 16,
     GetRoomInfo = 14,
     GetMemberSnapShot = 15,
-    Error = 100,
+}
+
+enum RealTimeActions {
+    ActionAuth = 1,
+    ActionData = 2,
+    ActionPublicMessage = 3,
+    ActionPrivateMessage = 4,
+    ActionJoin = 5,
+    ActionMembersDetail = 6,
+    ActionLeave = 7,
+    ActionDestroy = 8,
+    ActionStatus = 9,
+    ActionMirror = 10,
+    ActionEventMessage = 11,
+    ActionGetRoomSnapshot = 12,
+    ActionObserver = 13,
+    ActionRoomInfo = 14,
 }
 
 let Actions = {
     Command: CommandActions,
     TurnBased: TurnBasedActions,
+    RealTime: RealTimeActions,
     Error: 100
 }
 

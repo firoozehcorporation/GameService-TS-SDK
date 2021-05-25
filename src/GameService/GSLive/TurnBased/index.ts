@@ -181,7 +181,14 @@ export class TurnBased {
     }
 
     public async AcceptVote(memberID: string) {
+        let dataIn = new TurnData(this.superThis);
+        dataIn.ID = memberID;
 
+        let pkt = new TurnPacket(this.superThis);
+        pkt.SetHead(Actions.TurnBased.ActionAcceptVote);
+        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetData(dataIn.ToString());
+        pkt.Send();
     }
 
     public async SetOrUpdateProperty(type: PropertyType, data: { name: string, value: string }) {

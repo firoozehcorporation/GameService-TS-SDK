@@ -35,7 +35,7 @@ export class Command {
     }
 
     protected OnReceive = async (event: WebSocket.MessageEvent) => {
-        Log("[Command]", `[OnReceive]: ${event.data}`);
+        // Log("[Command]", `[OnReceive]: ${event.data}`);
 
         let packet = new Packet(this.superThis)
         packet.Parse(event.data);
@@ -89,11 +89,11 @@ export class Command {
                     autoMatchInfo = packet.GetMsg();
                 }
                 this.superThis.GSLive.TurnBased.OnAutoMatchUpdated(autoMatchInfo);
-                // this.superThis.GSLive.RealTime.OnAutoMatchUpdated();
+                this.superThis.GSLive.RealTime.OnAutoMatchUpdated(autoMatchInfo);
                 break
             case Actions.Command.LeftWaitingQ:
                 this.superThis.GSLive.TurnBased.OnAutoMatchCanceled(packet.GetMsg() || "")
-                // this.superThis.GSLive.RealTime.OnAutoMatchCanceled(packet.GetMsg() || "")
+                this.superThis.GSLive.RealTime.OnAutoMatchCanceled(packet.GetMsg() || "")
                 break
             case Actions.Command.ActionGetRooms:
 
@@ -103,7 +103,10 @@ export class Command {
                 // connect to relay
                 let start = new StartGame();
                 start.parse(packet.GetData()!)
-                await this.superThis.GSLive.TurnbasedController.Initilize(start.Room!["_id"], start.Area!.Endpoint, start.Area!.Port)
+                if (start.Room!["syncMode"] == 1)
+                    await this.superThis.GSLive.TurnbasedController.Initilize(start.Room!["_id"], start.Area!.Endpoint, start.Area!.Port)
+                else
+                    await this.superThis.GSLive.RealTimeController.Initilize(start.Room!["_id"],start.Area?.Hash!, start.Area!.Endpoint, start.Area!.Port)
                 break
             case Actions.Command.ActionKickUser:
 

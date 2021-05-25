@@ -1,7 +1,7 @@
-import { Actions, Url } from '../../../../Utils/Consts';
+import { Actions } from '../../../../Utils/Consts';
 import { GameService } from '../../../index';
 import { Payload } from '../Command/models';
-import { JoinDetail, Packet, PropertyChange, Room } from './models';
+import { JoinDetail, Packet, PropertyChange, Room, VoteDetail } from './models';
 import WebSocket from 'ws';
 import { Log } from '../../../../Utils/Logger';
 
@@ -13,7 +13,7 @@ export class TurnBased {
     static Connection: WebSocket | undefined = undefined
 
     public Initilize(RoomID: string, Endpoint: string, Port: number) {
-        console.log(`[TurnBased] [Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
+        Log("[TurnBased]", `[TurnBased] [Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
 
         this.RoomID = RoomID;
 
@@ -67,9 +67,12 @@ export class TurnBased {
                 this.superThis.GSLive.TurnBased.OnLeaveRoom(member)
                 break
             case Actions.TurnBased.ActionVote:
-
+                let voteDetail = JSON.parse(packet.GetData()!);
+                let vote = new VoteDetail();
+                vote.Parse(voteDetail);
+                this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member!, vote.Outcomes!)
                 break
-            case Actions.TurnBased.ActionComplete:
+            case Actions.TurnBased.ActionAcceptVote:
 
                 break
             case Actions.TurnBased.ActionGetUsers:
@@ -92,10 +95,7 @@ export class TurnBased {
                 roomInfo.Parse(roomInfoS);
                 this.superThis.GSLive.TurnBased.OnCurrentRoomInfoReceived(roomInfo.Export())
                 break
-            // case Actions.TurnBased.GetMemberSnapShot:
-
-            //     break
-            case Actions.TurnBased.Error:
+            case Actions.Error:
                 console.error(`[Error] [Msg: ${packet.GetMsg()}]`)
                 break
         }
@@ -103,10 +103,10 @@ export class TurnBased {
 
     private onDisconnect = (event: WebSocket.CloseEvent) => {
         if (event.wasClean) {
-            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            Log("[TurnBased]", `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {
             // e.g. server process killed or network down event.code is usually 1006 in this case
-            console.log('[close] Connection died');
+            Log("[TurnBased]", '[close] Connection died');
         }
         this.turnbasedToken = "";
     }

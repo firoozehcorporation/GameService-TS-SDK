@@ -270,3 +270,23 @@ export class JoinDetail {
         }
     }
 }
+
+export class VoteDetail {
+    Member: object | undefined
+    Outcomes: object | undefined
+
+    Parse(inputJ: any) {
+        this.Member = inputJ["0"]
+        this.Outcomes = inputJ["1"]
+    }
+}
+
+export class GameResult {
+    AcceptCount: number | undefined
+    Outcome: object | undefined
+
+    Parse(inputJ: any) {
+        this.AcceptCount = inputJ["0"]
+        this.Outcome = inputJ["1"]
+    }
+}
