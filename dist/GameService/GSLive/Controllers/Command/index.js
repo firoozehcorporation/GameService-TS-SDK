@@ -17,7 +17,6 @@ const Consts_1 = require("../../../../Utils/Consts");
 const ws_1 = __importDefault(require("ws"));
 const models_1 = require("./models");
 const models_2 = require("../../Chats/models");
-const Logger_1 = require("../../../../Utils/Logger");
 const __1 = require("../..");
 class Command {
     constructor(superThis) {
@@ -34,7 +33,8 @@ class Command {
             pkt.Send();
         };
         this.OnReceive = (event) => __awaiter(this, void 0, void 0, function* () {
-            Logger_1.Log("[Command]", `[OnReceive]: ${event.data}`);
+            // Log("[Command]", `[OnReceive]: ${event.data}`);
+            var _a;
             let packet = new models_1.Packet(this.superThis);
             packet.Parse(event.data);
             switch (packet.GetHead()) {
@@ -85,11 +85,11 @@ class Command {
                         autoMatchInfo = packet.GetMsg();
                     }
                     this.superThis.GSLive.TurnBased.OnAutoMatchUpdated(autoMatchInfo);
-                    // this.superThis.GSLive.RealTime.OnAutoMatchUpdated();
+                    this.superThis.GSLive.RealTime.OnAutoMatchUpdated(autoMatchInfo);
                     break;
                 case Consts_1.Actions.Command.LeftWaitingQ:
                     this.superThis.GSLive.TurnBased.OnAutoMatchCanceled(packet.GetMsg() || "");
-                    // this.superThis.GSLive.RealTime.OnAutoMatchCanceled(packet.GetMsg() || "")
+                    this.superThis.GSLive.RealTime.OnAutoMatchCanceled(packet.GetMsg() || "");
                     break;
                 case Consts_1.Actions.Command.ActionGetRooms:
                     break;
@@ -98,7 +98,10 @@ class Command {
                     // connect to relay
                     let start = new models_1.StartGame();
                     start.parse(packet.GetData());
-                    yield this.superThis.GSLive.TurnbasedController.Initilize(start.Room["_id"], start.Area.Endpoint, start.Area.Port);
+                    if (start.Room["syncMode"] == 1)
+                        yield this.superThis.GSLive.TurnbasedController.Initilize(start.Room["_id"], start.Area.Endpoint, start.Area.Port);
+                    else
+                        yield this.superThis.GSLive.RealTimeController.Initilize(start.Room["_id"], (_a = start.Area) === null || _a === void 0 ? void 0 : _a.Hash, start.Area.Endpoint, start.Area.Port);
                     break;
                 case Consts_1.Actions.Command.ActionKickUser:
                     break;

@@ -1,9 +1,9 @@
 import { GameService } from '../..';
 import { Log } from '../../../Utils/Logger';
 import { Actions } from '../../../Utils/Consts';
-import { PropertyType, CreateRoomOptions, AutoMatchOptions, GProtocolSendType } from './models';
+import { CreateRoomOptions, AutoMatchOptions, GProtocolSendType, EventPayload } from './models';
 import { Data, Packet, Payload } from '../Controllers/Command/models';
-import { Packet as RtPacket, Data as RtData, StringToBuffer } from '../Controllers/RealTime/models';
+import { Packet as RtPacket, Data as RtData, StringToBuffer, Types, Operations } from '../Controllers/RealTime/models';
 export class RealTime {
     constructor(public superThis: GameService) { }
 
@@ -159,13 +159,16 @@ export class RealTime {
     }
 
     public async SetOrUpdateMemberProperty(name: string, value: string) {
-        let data = new RtData();
-        let payloadS = [,,name.length,...StringToBuffer(name),]
+        let ev = new EventPayload();
+        ev.Name = name;
+        ev.Value = StringToBuffer(value);
 
-        let extra = Buffer.alloc(2);
-        extra.writeUInt8(0x3);
-        extra.writeUInt8(0x0);
-        data.Extra = extra;
+        let payload = new RtData();
+        payload.Payload = ev.Serialize();
+
+        let data = new RtData();
+        data.SetExtra(Types.Property, Operations.SetMemberProperty);
+        data.Payload = ev.Serialize();
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionEventMessage
@@ -175,15 +178,58 @@ export class RealTime {
     }
 
     public async RemoveMemberProperty(propertyName: string) {
+        let ev = new EventPayload();
+        ev.Name = propertyName;
 
+        let payload = new RtData();
+        payload.Payload = ev.Serialize();
+
+        let data = new RtData();
+        data.SetExtra(Types.Property, Operations.DelMemberProperty);
+        data.Payload = ev.Serialize();
+
+        let packet = new RtPacket();
+        packet.Action = Actions.RealTime.ActionEventMessage
+        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Payload = data.Serialize()
+        packet.Send()
     }
 
     public async SetOrUpdateRoomProperty(name: string, value: string) {
+        let ev = new EventPayload();
+        ev.Name = name;
+        ev.Value = StringToBuffer(value);
 
+        let payload = new RtData();
+        payload.Payload = ev.Serialize();
+
+        let data = new RtData();
+        data.SetExtra(Types.Property, Operations.SetRoomProperty);
+        data.Payload = ev.Serialize();
+
+        let packet = new RtPacket();
+        packet.Action = Actions.RealTime.ActionEventMessage
+        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Payload = data.Serialize()
+        packet.Send()
     }
 
     public async RemoveRoomProperty(propertyName: string) {
+        let ev = new EventPayload();
+        ev.Name = propertyName;
 
+        let payload = new RtData();
+        payload.Payload = ev.Serialize();
+
+        let data = new RtData();
+        data.SetExtra(Types.Property, Operations.DelRoomProperty);
+        data.Payload = ev.Serialize();
+
+        let packet = new RtPacket();
+        packet.Action = Actions.RealTime.ActionEventMessage
+        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Payload = data.Serialize()
+        packet.Send()
     }
 
     public async GetRoomProperties() {
@@ -193,29 +239,29 @@ export class RealTime {
         packet.Send()
     }
 
-    public async GetRoomProperty(propertyName: string) {
+    // public async GetRoomProperty(propertyName: string) {
 
-    }
+    // }
 
-    public async GetMemberProperties(memberID: string) {
+    // public async GetMemberProperties(memberID: string) {
 
-    }
+    // }
 
-    public async GetPropertyValues(propertyName: string) {
+    // public async GetPropertyValues(propertyName: string) {
 
-    }
+    // }
 
-    public async GetPropertyAndValueMembers(name: string, value: string) {
+    // public async GetPropertyAndValueMembers(name: string, value: string) {
 
-    }
+    // }
 
-    public async GetPropertyMembers(propertyName: string) {
+    // public async GetPropertyMembers(propertyName: string) {
 
-    }
+    // }
 
-    public async GetRoomMembers() {
+    // public async GetRoomMembers() {
 
-    }
+    // }
 
     public async LeaveRoom() {
         let packet = new RtPacket();
@@ -237,5 +283,5 @@ export class RealTime {
     public RoomMembersDetailReceived: (members: any[]) => void = () => { }
     public NewMessageReceived: (event: any) => void = () => { }
     public LeftRoom: (member: any) => void = () => { }
-    public OnPropertyEvent: () => void = () => { }
+    public OnPropertyEvent: (PropertyUpdate: any) => void = () => { }
 }

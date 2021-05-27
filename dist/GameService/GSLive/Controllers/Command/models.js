@@ -163,6 +163,38 @@ class Data {
     SetPassword(Password) {
         this.Password = Password;
     }
+    Parse(inputJ) {
+        this.ID = inputJ[0];
+        this.User = inputJ[1];
+        this.Invite = inputJ[2];
+        this.Name = inputJ[3];
+        this.Head = inputJ[4];
+        this.Min = inputJ[5];
+        this.Max = inputJ[6];
+        this.SyncMode = inputJ[7];
+        this.Role = inputJ[8];
+        this.Private = inputJ[9];
+        this.Persist = inputJ[10];
+        this.Extra = inputJ[11];
+        this.Password = inputJ[12];
+    }
+    Export() {
+        return {
+            ID: this.ID,
+            User: this.User,
+            Invite: this.Invite,
+            Name: this.Name,
+            Head: this.Head,
+            Min: this.Min,
+            Max: this.Max,
+            SyncMode: this.SyncMode,
+            Role: this.Role,
+            Private: this.Private,
+            Persist: this.Persist,
+            Extra: this.Extra,
+            Password: this.Password,
+        };
+    }
     Cast() {
         return {
             "0": this.ID,

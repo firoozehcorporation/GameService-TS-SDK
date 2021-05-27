@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JoinDetail = exports.PropertyChange = exports.Room = exports.Packet = void 0;
+exports.GameResult = exports.VoteDetail = exports.JoinDetail = exports.PropertyChange = exports.Room = exports.Packet = void 0;
 const _1 = require(".");
 const models_1 = require("../../TurnBased/models");
 class Packet {
@@ -238,3 +238,17 @@ class JoinDetail {
     }
 }
 exports.JoinDetail = JoinDetail;
+class VoteDetail {
+    Parse(inputJ) {
+        this.Member = inputJ["0"];
+        this.Outcomes = inputJ["1"];
+    }
+}
+exports.VoteDetail = VoteDetail;
+class GameResult {
+    Parse(inputJ) {
+        this.AcceptCount = inputJ["0"];
+        this.Outcome = inputJ["1"];
+    }
+}
+exports.GameResult = GameResult;

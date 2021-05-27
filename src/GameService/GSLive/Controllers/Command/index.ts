@@ -12,7 +12,7 @@ export class Command {
     commandToken: string = "";
 
     public Initilize() {
-        console.log(`[Command] [Connecting] [${Url.Command.Endpoint}]`);
+        Log("[Command]", `[Connecting][${ Url.Command.Endpoint }]`);
         GSLive.CommandConnection = new WebSocket(Url.Command.Endpoint);
         GSLive.CommandConnection!.onopen = this.OnConnect
         GSLive.CommandConnection!.onmessage = this.OnReceive;
@@ -35,7 +35,7 @@ export class Command {
     }
 
     protected OnReceive = async (event: WebSocket.MessageEvent) => {
-        // Log("[Command]", `[OnReceive]: ${event.data}`);
+        // Log("[Command]", `[OnReceive]: ${ event.data }`);
 
         let packet = new Packet(this.superThis)
         packet.Parse(event.data);
@@ -106,24 +106,24 @@ export class Command {
                 if (start.Room!["syncMode"] == 1)
                     await this.superThis.GSLive.TurnbasedController.Initilize(start.Room!["_id"], start.Area!.Endpoint, start.Area!.Port)
                 else
-                    await this.superThis.GSLive.RealTimeController.Initilize(start.Room!["_id"],start.Area?.Hash!, start.Area!.Endpoint, start.Area!.Port)
+                    await this.superThis.GSLive.RealTimeController.Initilize(start.Room!["_id"], start.Area?.Hash!, start.Area!.Endpoint, start.Area!.Port)
                 break
             case Actions.Command.ActionKickUser:
 
                 break
 
             case Actions.Error:
-                console.error(`[Error] [Msg: ${packet.GetMsg()}]`)
+                console.error(`[Error][Msg: ${ packet.GetMsg() }]`)
                 break
         }
     }
 
     private onDisconnect = (event: WebSocket.CloseEvent) => {
         if (event.wasClean) {
-            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            Log("[Command]",`[close] Connection closed cleanly, code = ${ event.code } reason = ${ event.reason }`);
         } else {
             // e.g. server process killed or network down event.code is usually 1006 in this case
-            console.log('[close] Connection died');
+            Log("[Command]",'[close] Connection died');
         }
         this.commandToken = "";
     }

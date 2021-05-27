@@ -4,7 +4,8 @@ import { Data, JoinPayload } from './models';
 import { AuthPayload, BufferToString, Packet } from './models';
 import WebSocket from 'ws';
 import { Log } from '../../../../Utils/Logger';
-import { GProtocolSendType, MessageType } from '../../RealTime/models';
+import { EventPayload, GProtocolSendType, MessageType } from '../../RealTime/models';
+import { Room } from '../ُTurnBased/models';
 
 export class RealTime {
     constructor(public superThis: GameService) { }
@@ -102,9 +103,20 @@ export class RealTime {
             // case Actions.RealTime.ActionMirror:
             //     // Do Nothing
             //     break
-            // case Actions.RealTime.ActionEventMessage:
+            case Actions.RealTime.ActionEventMessage:
+                let evM = new Data();
+                evM.Deserialize(packet.Payload!)
 
-            //     break
+                let ev = new EventPayload();
+                ev.Deserialize(evM.Payload)
+                this.superThis.GSLive.RealTime.OnPropertyEvent({
+                    By: evM.SenderID,
+                    Name: ev.Name,
+                    Value: BufferToString(ev.Value),
+                    Action: evM.GetExtra().Action,
+                    Type: evM.GetExtra().Type,
+                })
+                break
             // case Actions.RealTime.ActionGetRoomSnapshot:
             //     console.log("ActionGetRoomSnapshot", BufferToString(packet.Payload!))
             //     break
@@ -112,8 +124,10 @@ export class RealTime {
 
             //     break
             case Actions.RealTime.ActionRoomInfo:
-                let roomInfo = JSON.parse(BufferToString(packet.Payload!));
-                this.superThis.GSLive.RealTime.CurrentRoomInfoReceived(roomInfo)
+                let roomInfoS = JSON.parse(BufferToString(packet.Payload!));
+                let roomInfo = new Room();
+                roomInfo.Parse(roomInfoS);
+                this.superThis.GSLive.RealTime.CurrentRoomInfoReceived(roomInfo.Export())
                 break
             case Actions.Error:
                 console.error(`[Error] [Msg: ${packet.Payload?.toString()}]`)

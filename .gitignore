@@ -3,3 +3,5 @@ test
 jest.config.js
 node_modules
 /node_modules
+dist
+/dist

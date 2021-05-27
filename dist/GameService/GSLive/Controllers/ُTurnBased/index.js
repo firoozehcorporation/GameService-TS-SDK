@@ -52,8 +52,12 @@ class TurnBased {
                     this.superThis.GSLive.TurnBased.OnLeaveRoom(member);
                     break;
                 case Consts_1.Actions.TurnBased.ActionVote:
+                    let voteDetail = JSON.parse(packet.GetData());
+                    let vote = new models_2.VoteDetail();
+                    vote.Parse(voteDetail);
+                    this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member, vote.Outcomes);
                     break;
-                case Consts_1.Actions.TurnBased.ActionComplete:
+                case Consts_1.Actions.TurnBased.ActionAcceptVote:
                     break;
                 case Consts_1.Actions.TurnBased.ActionGetUsers:
                     let members = JSON.parse(packet.GetData());
@@ -75,26 +79,24 @@ class TurnBased {
                     roomInfo.Parse(roomInfoS);
                     this.superThis.GSLive.TurnBased.OnCurrentRoomInfoReceived(roomInfo.Export());
                     break;
-                // case Actions.TurnBased.GetMemberSnapShot:
-                //     break
-                case Consts_1.Actions.TurnBased.Error:
+                case Consts_1.Actions.Error:
                     console.error(`[Error] [Msg: ${packet.GetMsg()}]`);
                     break;
             }
         };
         this.onDisconnect = (event) => {
             if (event.wasClean) {
-                console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+                Logger_1.Log("[TurnBased]", `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
             }
             else {
                 // e.g. server process killed or network down event.code is usually 1006 in this case
-                console.log('[close] Connection died');
+                Logger_1.Log("[TurnBased]", '[close] Connection died');
             }
             this.turnbasedToken = "";
         };
     }
     Initilize(RoomID, Endpoint, Port) {
-        console.log(`[TurnBased] [Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
+        Logger_1.Log("[TurnBased]", `[TurnBased] [Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
         this.RoomID = RoomID;
         TurnBased.Connection = new ws_1.default(`ws://${Endpoint}:${Port}`);
         TurnBased.Connection.onopen = this.OnConnect;

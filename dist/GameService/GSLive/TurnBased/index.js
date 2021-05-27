@@ -214,6 +214,13 @@ class TurnBased {
     }
     AcceptVote(memberID) {
         return __awaiter(this, void 0, void 0, function* () {
+            let dataIn = new models_1.Data(this.superThis);
+            dataIn.ID = memberID;
+            let pkt = new models_2.Packet(this.superThis);
+            pkt.SetHead(Consts_1.Actions.TurnBased.ActionAcceptVote);
+            pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+            pkt.SetData(dataIn.ToString());
+            pkt.Send();
         });
     }
     SetOrUpdateProperty(type, data) {

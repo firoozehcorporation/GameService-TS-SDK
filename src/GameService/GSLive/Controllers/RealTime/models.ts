@@ -146,19 +146,24 @@ export class Data {
         this._Payload = value
     }
     private _Extra: Uint8Array = new Uint8Array()
-    public get Extra(): Uint8Array {
-        return this._Extra
+    public GetExtra(): any {
+        let b = Buffer.from(this._Extra);
+        return {
+            Type: b.readUInt8(),
+            Action: b.readUInt8(1)
+        }
     }
-    public set Extra(value: Uint8Array) {
-        this._Extra = value
+    public SetExtra(type: Types, action: Operations) {
+        this._Extra = new Uint8Array([type, action]);
     }
+
 
     Cast() {
         return {
             "1": this.SenderID,
             "2": this.ReceiverID,
             "3": BufferToString(this.Payload!),
-            "4": this.Extra!,
+            "4": this._Extra!,
         }
     }
 
@@ -166,7 +171,7 @@ export class Data {
         this.SenderID = inputJ["1"];
         this.ReceiverID = inputJ["2"];
         this.Payload = inputJ["3"];
-        this.Extra = inputJ["4"]
+        this._Extra = inputJ["4"]
     }
 
     Export() {
@@ -174,7 +179,7 @@ export class Data {
             SenderID: this.SenderID,
             ReceiverID: this.ReceiverID,
             Payload: BufferToString(this.Payload!),
-            Extra: this.Extra,
+            Extra: this.GetExtra(),
         }
     }
 
@@ -196,7 +201,7 @@ export class Data {
             havePayload = 0x1;
         }
 
-        if (this.Extra) {
+        if (this._Extra) {
             haveExtra = 0x1;
         }
 
@@ -221,7 +226,7 @@ export class Data {
 
         if (haveExtra > 0) {
             let t = Buffer.alloc(2);
-            t.writeUInt16LE(this.Extra?.length!)
+            t.writeUInt16LE(this._Extra?.length!)
             source = [...source, ...t.valueOf()];
         }
 
@@ -238,7 +243,7 @@ export class Data {
         }
 
         if (haveExtra > 0) {
-            source = [...source, ...this.Extra!];
+            source = [...source, ...this._Extra!];
         }
         return new Uint8Array(source)
     }
@@ -292,10 +297,28 @@ export class Data {
         }
 
         if (haveExtra > 0) {
-            this.Extra = buff.slice(offset, offset + extraLen);
+            this._Extra = buff.slice(offset, offset + extraLen);
             offset += extraLen
         }
     }
+}
+
+export enum Types {
+    Object = 0x1,
+    Function = 0x2,
+    Property = 0x3
+}
+
+export enum Operations {
+    SetMemberProperty = 0x2,
+    DelMemberProperty = 0x3,
+    SetRoomProperty = 0x0,
+    DelRoomProperty = 0x1,
+
+    BufferedFunction = 0x2,
+
+    InstanceObject = 0x0,
+    DestroyObject = 0x1
 }
 
 export function StringToBuffer(str: string): Uint8Array {

@@ -1,3 +1,5 @@
+import { BufferToString, StringToBuffer } from "../Controllers/RealTime/models"
+
 export enum PropertyType {
     Room = "room",
     Member = "member"
@@ -48,4 +50,54 @@ export enum GProtocolSendType {
 export enum MessageType {
     Private = 4,
     Public = 3
+}
+
+export class EventPayload {
+    Name: string = "";
+    Value: Uint8Array = new Uint8Array();
+
+    Serialize(): Uint8Array {
+        let b = Buffer.alloc(2);
+        b.writeUInt16LE(StringToBuffer(this.Name).length);
+        let a = Buffer.alloc(2);
+        a.writeUInt16LE(this.Value?.length);
+
+        let source = [
+            2,
+            12,
+            ...b.valueOf(),
+            ...StringToBuffer(this.Name),
+            13,
+            ...a.valueOf(),
+            ...this.Value
+        ]
+
+        return new Uint8Array(source);
+    }
+
+    Deserialize(input: any) {
+        let buff = Buffer.from(input);
+        let offset = 1
+
+        offset++
+        let NameLength = buff.readUInt16LE(offset)
+        offset += 2
+        let name = buff.slice(offset, offset + NameLength);
+        offset += NameLength;
+        this.Name = BufferToString(name);
+
+        offset++
+        let ValueLength = buff.readUInt16LE(offset)
+        offset += 2
+        let value = buff.slice(offset, offset + ValueLength);
+        offset += ValueLength;
+        this.Value = value;
+    }
+
+    Export() {
+        return {
+            Name: this.Name,
+            Value: BufferToString(this.Value)
+        }
+    }
 }

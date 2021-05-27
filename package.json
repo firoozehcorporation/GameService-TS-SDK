@@ -1,13 +1,15 @@
 {
-  "name": "js-sdk",
+  "name": "gameservice-sdk",
   "version": "1.0.0",
   "description": "JavaScript SDK version of GamesService.ir",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "user1": "ts-node ./test/user1.test.ts",
     "user2": "ts-node ./test/user2.test.ts",
-    "serialize": "ts-node ./test/serialize.test.ts"
+    "serialize": "ts-node ./test/serialize.test.ts",
+    "eventSerialize": "ts-node test/eventSerialize.test.ts"
   },
   "author": "Amir Rastegar (FiroozehCorp LTD)",
   "license": "ISC",
@@ -24,5 +26,13 @@
     "axios": "^0.21.1",
     "uuid": "^3.4.0",
     "ws": "^7.4.5"
-  }
+  },
+  "keywords": [
+    "Gaming",
+    "online game",
+    "multiplayer",
+    "cloud",
+    "gamesservice",
+    "gameservice"
+  ]
 }

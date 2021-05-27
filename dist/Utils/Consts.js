@@ -31,16 +31,10 @@ var CommandUrls;
     // Endpoint = "wss://command-ws.gamesservice.ir",
     CommandUrls["Endpoint"] = "ws://localhost:3004";
 })(CommandUrls || (CommandUrls = {}));
-var TurnBasedUrls;
-(function (TurnBasedUrls) {
-    // Endpoint = "wss://command-ws.gamesservice.ir",
-    TurnBasedUrls["Endpoint"] = "ws://localhost:3005";
-})(TurnBasedUrls || (TurnBasedUrls = {}));
 let Url = {
     Api: ApiUrls,
     DBaaS: DBaaSUrls,
     Command: CommandUrls,
-    TurnBased: TurnBasedUrls,
 };
 exports.Url = Url;
 var CommandActions;
@@ -80,18 +74,35 @@ var TurnBasedActions;
     TurnBasedActions[TurnBasedActions["ActionChooseNext"] = 5] = "ActionChooseNext";
     TurnBasedActions[TurnBasedActions["ActionLeave"] = 6] = "ActionLeave";
     TurnBasedActions[TurnBasedActions["ActionVote"] = 7] = "ActionVote";
-    TurnBasedActions[TurnBasedActions["ActionComplete"] = 8] = "ActionComplete";
+    TurnBasedActions[TurnBasedActions["ActionAcceptVote"] = 8] = "ActionAcceptVote";
     TurnBasedActions[TurnBasedActions["ActionGetUsers"] = 9] = "ActionGetUsers";
     TurnBasedActions[TurnBasedActions["ActionCurrentTurnDetail"] = 12] = "ActionCurrentTurnDetail";
     TurnBasedActions[TurnBasedActions["ModifyValue"] = 13] = "ModifyValue";
     TurnBasedActions[TurnBasedActions["ModifyRoomValue"] = 16] = "ModifyRoomValue";
     TurnBasedActions[TurnBasedActions["GetRoomInfo"] = 14] = "GetRoomInfo";
     TurnBasedActions[TurnBasedActions["GetMemberSnapShot"] = 15] = "GetMemberSnapShot";
-    TurnBasedActions[TurnBasedActions["Error"] = 100] = "Error";
 })(TurnBasedActions || (TurnBasedActions = {}));
+var RealTimeActions;
+(function (RealTimeActions) {
+    RealTimeActions[RealTimeActions["ActionAuth"] = 1] = "ActionAuth";
+    RealTimeActions[RealTimeActions["ActionData"] = 2] = "ActionData";
+    RealTimeActions[RealTimeActions["ActionPublicMessage"] = 3] = "ActionPublicMessage";
+    RealTimeActions[RealTimeActions["ActionPrivateMessage"] = 4] = "ActionPrivateMessage";
+    RealTimeActions[RealTimeActions["ActionJoin"] = 5] = "ActionJoin";
+    RealTimeActions[RealTimeActions["ActionMembersDetail"] = 6] = "ActionMembersDetail";
+    RealTimeActions[RealTimeActions["ActionLeave"] = 7] = "ActionLeave";
+    RealTimeActions[RealTimeActions["ActionDestroy"] = 8] = "ActionDestroy";
+    RealTimeActions[RealTimeActions["ActionStatus"] = 9] = "ActionStatus";
+    RealTimeActions[RealTimeActions["ActionMirror"] = 10] = "ActionMirror";
+    RealTimeActions[RealTimeActions["ActionEventMessage"] = 11] = "ActionEventMessage";
+    RealTimeActions[RealTimeActions["ActionGetRoomSnapshot"] = 12] = "ActionGetRoomSnapshot";
+    RealTimeActions[RealTimeActions["ActionObserver"] = 13] = "ActionObserver";
+    RealTimeActions[RealTimeActions["ActionRoomInfo"] = 14] = "ActionRoomInfo";
+})(RealTimeActions || (RealTimeActions = {}));
 let Actions = {
     Command: CommandActions,
     TurnBased: TurnBasedActions,
+    RealTime: RealTimeActions,
     Error: 100
 };
 exports.Actions = Actions;
