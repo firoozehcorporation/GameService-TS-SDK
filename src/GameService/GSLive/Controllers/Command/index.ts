@@ -10,9 +10,10 @@ export class Command {
     constructor(public superThis: GameService) { }
 
     commandToken: string = "";
+    isInAutoMatchQueue = false;
 
     public Initilize() {
-        Log("[Command]", `[Connecting][${ Url.Command.Endpoint }]`);
+        Log("[Command]", `[Connecting][${Url.Command.Endpoint}]`);
         GSLive.CommandConnection = new WebSocket(Url.Command.Endpoint);
         GSLive.CommandConnection!.onopen = this.OnConnect
         GSLive.CommandConnection!.onmessage = this.OnReceive;
@@ -90,10 +91,12 @@ export class Command {
                 }
                 this.superThis.GSLive.TurnBased.OnAutoMatchUpdated(autoMatchInfo);
                 this.superThis.GSLive.RealTime.OnAutoMatchUpdated(autoMatchInfo);
+                this.isInAutoMatchQueue = true;
                 break
             case Actions.Command.LeftWaitingQ:
                 this.superThis.GSLive.TurnBased.OnAutoMatchCanceled(packet.GetMsg() || "")
                 this.superThis.GSLive.RealTime.OnAutoMatchCanceled(packet.GetMsg() || "")
+                this.isInAutoMatchQueue = false;
                 break
             case Actions.Command.ActionGetRooms:
 
@@ -107,23 +110,23 @@ export class Command {
                     await this.superThis.GSLive.TurnbasedController.Initilize(start.Room!["_id"], start.Area!.Endpoint, start.Area!.Port)
                 else
                     await this.superThis.GSLive.RealTimeController.Initilize(start.Room!["_id"], start.Area?.Hash!, start.Area!.Endpoint, start.Area!.Port)
+                this.isInAutoMatchQueue = false;
                 break
-            case Actions.Command.ActionKickUser:
+            // case Actions.Command.ActionKickUser:
 
-                break
+            //     break
 
             case Actions.Error:
-                console.error(`[Error][Msg: ${ packet.GetMsg() }]`)
+                console.error(`[Error][Msg: ${packet.GetMsg()}]`)
                 break
         }
     }
 
     private onDisconnect = (event: WebSocket.CloseEvent) => {
         if (event.wasClean) {
-            Log("[Command]",`[close] Connection closed cleanly, code = ${ event.code } reason = ${ event.reason }`);
+            Log("[Command]", `[close] Connection closed cleanly, code = ${event.code} reason = ${event.reason}`);
         } else {
-            // e.g. server process killed or network down event.code is usually 1006 in this case
-            Log("[Command]",'[close] Connection died');
+            Log("[Command]", '[close] Connection died');
         }
         this.commandToken = "";
     }

@@ -17,11 +17,13 @@ const Consts_1 = require("../../../../Utils/Consts");
 const ws_1 = __importDefault(require("ws"));
 const models_1 = require("./models");
 const models_2 = require("../../Chats/models");
+const Logger_1 = require("../../../../Utils/Logger");
 const __1 = require("../..");
 class Command {
     constructor(superThis) {
         this.superThis = superThis;
         this.commandToken = "";
+        this.isInAutoMatchQueue = false;
         this.OnConnect = (e) => {
             // Send Auth pkt
             let payload = new models_1.Payload(this.superThis);
@@ -33,7 +35,7 @@ class Command {
             pkt.Send();
         };
         this.OnReceive = (event) => __awaiter(this, void 0, void 0, function* () {
-            // Log("[Command]", `[OnReceive]: ${event.data}`);
+            // Log("[Command]", `[OnReceive]: ${ event.data }`);
             var _a;
             let packet = new models_1.Packet(this.superThis);
             packet.Parse(event.data);
@@ -86,10 +88,12 @@ class Command {
                     }
                     this.superThis.GSLive.TurnBased.OnAutoMatchUpdated(autoMatchInfo);
                     this.superThis.GSLive.RealTime.OnAutoMatchUpdated(autoMatchInfo);
+                    this.isInAutoMatchQueue = true;
                     break;
                 case Consts_1.Actions.Command.LeftWaitingQ:
                     this.superThis.GSLive.TurnBased.OnAutoMatchCanceled(packet.GetMsg() || "");
                     this.superThis.GSLive.RealTime.OnAutoMatchCanceled(packet.GetMsg() || "");
+                    this.isInAutoMatchQueue = false;
                     break;
                 case Consts_1.Actions.Command.ActionGetRooms:
                     break;
@@ -102,27 +106,27 @@ class Command {
                         yield this.superThis.GSLive.TurnbasedController.Initilize(start.Room["_id"], start.Area.Endpoint, start.Area.Port);
                     else
                         yield this.superThis.GSLive.RealTimeController.Initilize(start.Room["_id"], (_a = start.Area) === null || _a === void 0 ? void 0 : _a.Hash, start.Area.Endpoint, start.Area.Port);
+                    this.isInAutoMatchQueue = false;
                     break;
-                case Consts_1.Actions.Command.ActionKickUser:
-                    break;
+                // case Actions.Command.ActionKickUser:
+                //     break
                 case Consts_1.Actions.Error:
-                    console.error(`[Error] [Msg: ${packet.GetMsg()}]`);
+                    console.error(`[Error][Msg: ${packet.GetMsg()}]`);
                     break;
             }
         });
         this.onDisconnect = (event) => {
             if (event.wasClean) {
-                console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+                Logger_1.Log("[Command]", `[close] Connection closed cleanly, code = ${event.code} reason = ${event.reason}`);
             }
             else {
-                // e.g. server process killed or network down event.code is usually 1006 in this case
-                console.log('[close] Connection died');
+                Logger_1.Log("[Command]", '[close] Connection died');
             }
             this.commandToken = "";
         };
     }
     Initilize() {
-        console.log(`[Command] [Connecting] [${Consts_1.Url.Command.Endpoint}]`);
+        Logger_1.Log("[Command]", `[Connecting][${Consts_1.Url.Command.Endpoint}]`);
         __1.GSLive.CommandConnection = new ws_1.default(Consts_1.Url.Command.Endpoint);
         __1.GSLive.CommandConnection.onopen = this.OnConnect;
         __1.GSLive.CommandConnection.onmessage = this.OnReceive;

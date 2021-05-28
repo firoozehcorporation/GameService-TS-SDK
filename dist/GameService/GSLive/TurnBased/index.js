@@ -39,6 +39,8 @@ class TurnBased {
     // Functions
     CreateRoom(options) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID)
+                throw "User is already in game room, please left from it first.";
             let data = new models_3.Data(this.superThis);
             data.SetMax(options.maxPlayer);
             data.SetMin(options.minPlayer);
@@ -58,6 +60,10 @@ class TurnBased {
     }
     AutoMatch(options) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.isInAutoMatchQueue)
+                throw "User is in automatch queue already";
+            if (this.superThis.GSLive.TurnbasedController.RoomID)
+                throw "User is already in game room, please left from it first.";
             let data = new models_3.Data(this.superThis);
             data.SetMax(options.maxPlayer);
             data.SetMin(options.minPlayer);
@@ -74,6 +80,8 @@ class TurnBased {
     }
     CancelAutoMatch() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!this.superThis.GSLive.Command.isInAutoMatchQueue)
+                throw "User is not in automatch queue";
             let pkt = new models_3.Packet(this.superThis);
             pkt.SetHead(Consts_1.Actions.Command.LeftWaitingQ);
             pkt.SetToken(this.superThis.GSLive.Command.commandToken);
@@ -94,6 +102,8 @@ class TurnBased {
     }
     JoinRoom(roomID, extra = undefined, password = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID)
+                throw "User is already in game room, please left from it first.";
             let data = new models_3.Data(this.superThis);
             data.SetID(roomID);
             data.SetExtra(extra);
@@ -142,6 +152,8 @@ class TurnBased {
     }
     AcceptInvite(inviteID, extra) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID)
+                throw "User is already in game room, please left from it first.";
             let data = new models_3.Data(this.superThis);
             data.SetInvite(inviteID);
             data.SetExtra(extra);
@@ -154,6 +166,8 @@ class TurnBased {
     }
     GetCurrentRoomInfo() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let pkt = new models_2.Packet(this.superThis);
             pkt.SetHead(Consts_1.Actions.TurnBased.GetRoomInfo);
             pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
@@ -162,6 +176,8 @@ class TurnBased {
     }
     GetRoomMembersDetail() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let pkt = new models_2.Packet(this.superThis);
             pkt.SetHead(Consts_1.Actions.TurnBased.ActionGetUsers);
             pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
@@ -170,6 +186,8 @@ class TurnBased {
     }
     ChooseNext(whoIsNext = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let data = new models_1.Data(this.superThis);
             if (whoIsNext)
                 data.Next = whoIsNext;
@@ -182,6 +200,8 @@ class TurnBased {
     }
     TakeTurn(data, whoIsNext = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let dataIn = new models_1.Data(this.superThis);
             if (whoIsNext)
                 dataIn.Next = whoIsNext;
@@ -195,6 +215,8 @@ class TurnBased {
     }
     GetCurrentTurnMember() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let pkt = new models_2.Packet(this.superThis);
             pkt.SetHead(Consts_1.Actions.TurnBased.ActionCurrentTurnDetail);
             pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
@@ -203,6 +225,8 @@ class TurnBased {
     }
     Vote(outcomes) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let dataIn = new models_1.Data(this.superThis);
             dataIn.Outcomes = outcomes;
             let pkt = new models_2.Packet(this.superThis);
@@ -214,6 +238,8 @@ class TurnBased {
     }
     AcceptVote(memberID) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let dataIn = new models_1.Data(this.superThis);
             dataIn.ID = memberID;
             let pkt = new models_2.Packet(this.superThis);
@@ -225,6 +251,8 @@ class TurnBased {
     }
     SetOrUpdateProperty(type, data) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let dataIn = new models_1.Data(this.superThis);
             dataIn.Head = 1;
             if (type === models_1.PropertyType.Room)
@@ -244,6 +272,8 @@ class TurnBased {
     }
     RemoveProperty(type, name) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let dataIn = new models_1.Data(this.superThis);
             dataIn.Head = 2;
             if (type === models_1.PropertyType.Room)
@@ -260,6 +290,8 @@ class TurnBased {
     }
     LeaveRoom(whoIsNext = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
             let data = new models_1.Data(this.superThis);
             data.Next = whoIsNext;
             let pkt = new models_2.Packet(this.superThis);

@@ -8,8 +8,10 @@ export class RealTime {
     constructor(public superThis: GameService) { }
 
     // Functions
-
     public async CreateRoom(options: CreateRoomOptions) {
+        if (this.superThis.GSLive.RealTimeController.RoomID)
+            throw "User is already in game room, please left from it first.";
+
         let data = new Data(this.superThis);
         data.SetMax(options.maxPlayer);
         data.SetMin(options.minPlayer);
@@ -29,6 +31,11 @@ export class RealTime {
     }
 
     public async AutoMatch(options: AutoMatchOptions) {
+        if (this.superThis.GSLive.Command.isInAutoMatchQueue)
+            throw "User is in automatch queue already";
+        if (this.superThis.GSLive.RealTimeController.RoomID)
+            throw "User is already in game room, please left from it first.";
+
         let data = new Data(this.superThis);
         data.SetMax(options.maxPlayer);
         data.SetMin(options.minPlayer);
@@ -45,6 +52,9 @@ export class RealTime {
     }
 
     public async CancelAutoMatch() {
+        if (!this.superThis.GSLive.Command.isInAutoMatchQueue)
+            throw "User is not in automatch queue";
+
         let pkt = new Packet(this.superThis);
         pkt.SetHead(Actions.Command.LeftWaitingQ);
         pkt.SetToken(this.superThis.GSLive.Command.commandToken)
@@ -64,6 +74,9 @@ export class RealTime {
     }
 
     public async JoinRoom(roomID: string, extra: string | undefined = undefined, password: string | undefined = undefined) {
+        if (this.superThis.GSLive.RealTimeController.RoomID)
+            throw "User is already in game room, please left from it first.";
+
         let data = new Data(this.superThis);
         data.SetID(roomID);
         data.SetExtra(extra!);
@@ -112,6 +125,9 @@ export class RealTime {
     }
 
     public async AcceptInvite(inviteID: string, extra: string) {
+        if (this.superThis.GSLive.RealTimeController.RoomID)
+            throw "User is already in game room, please left from it first.";
+
         let data = new Data(this.superThis);
         data.SetInvite(inviteID);
         data.SetExtra(extra)
@@ -124,6 +140,9 @@ export class RealTime {
     }
 
     public async GetCurrentRoomInfo() {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionRoomInfo
         packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
@@ -131,6 +150,9 @@ export class RealTime {
     }
 
     public async GetRoomMembersDetail() {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionMembersDetail
         packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
@@ -138,6 +160,9 @@ export class RealTime {
     }
 
     public async SendPublicMessage(data: string, sendType: GProtocolSendType) {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionPublicMessage
         packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
@@ -147,6 +172,9 @@ export class RealTime {
     }
 
     public async SendPrivateMessage(recieverID: string, data: string) {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let payload = new RtData();
         payload.ReceiverID = recieverID;
         payload.Payload = StringToBuffer(data);
@@ -159,6 +187,9 @@ export class RealTime {
     }
 
     public async SetOrUpdateMemberProperty(name: string, value: string) {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let ev = new EventPayload();
         ev.Name = name;
         ev.Value = StringToBuffer(value);
@@ -178,6 +209,9 @@ export class RealTime {
     }
 
     public async RemoveMemberProperty(propertyName: string) {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let ev = new EventPayload();
         ev.Name = propertyName;
 
@@ -196,6 +230,9 @@ export class RealTime {
     }
 
     public async SetOrUpdateRoomProperty(name: string, value: string) {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let ev = new EventPayload();
         ev.Name = name;
         ev.Value = StringToBuffer(value);
@@ -215,6 +252,9 @@ export class RealTime {
     }
 
     public async RemoveRoomProperty(propertyName: string) {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let ev = new EventPayload();
         ev.Name = propertyName;
 
@@ -233,6 +273,9 @@ export class RealTime {
     }
 
     public async GetRoomProperties() {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionGetRoomSnapshot
         packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
@@ -264,6 +307,9 @@ export class RealTime {
     // }
 
     public async LeaveRoom() {
+        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionLeave
         packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;

@@ -10,6 +10,9 @@ export class TurnBased {
 
     // Functions
     public async CreateRoom(options: CreateRoomOptions) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID)
+            throw "User is already in game room, please left from it first.";
+
         let data = new Data(this.superThis);
         data.SetMax(options.maxPlayer);
         data.SetMin(options.minPlayer);
@@ -29,6 +32,11 @@ export class TurnBased {
     }
 
     public async AutoMatch(options: AutoMatchOptions) {
+        if (this.superThis.GSLive.Command.isInAutoMatchQueue)
+            throw "User is in automatch queue already";
+        if (this.superThis.GSLive.TurnbasedController.RoomID)
+            throw "User is already in game room, please left from it first.";
+
         let data = new Data(this.superThis);
         data.SetMax(options.maxPlayer);
         data.SetMin(options.minPlayer);
@@ -45,6 +53,8 @@ export class TurnBased {
     }
 
     public async CancelAutoMatch() {
+        if (!this.superThis.GSLive.Command.isInAutoMatchQueue)
+            throw "User is not in automatch queue";
         let pkt = new Packet(this.superThis);
         pkt.SetHead(Actions.Command.LeftWaitingQ);
         pkt.SetToken(this.superThis.GSLive.Command.commandToken)
@@ -64,6 +74,9 @@ export class TurnBased {
     }
 
     public async JoinRoom(roomID: string, extra: string | undefined = undefined, password: string | undefined = undefined) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID)
+            throw "User is already in game room, please left from it first.";
+
         let data = new Data(this.superThis);
         data.SetID(roomID);
         data.SetExtra(extra!);
@@ -112,6 +125,9 @@ export class TurnBased {
     }
 
     public async AcceptInvite(inviteID: string, extra: string) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID)
+            throw "User is already in game room, please left from it first.";
+
         let data = new Data(this.superThis);
         data.SetInvite(inviteID);
         data.SetExtra(extra)
@@ -124,6 +140,9 @@ export class TurnBased {
     }
 
     public async GetCurrentRoomInfo() {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let pkt = new TurnPacket(this.superThis);
         pkt.SetHead(Actions.TurnBased.GetRoomInfo);
         pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
@@ -131,6 +150,9 @@ export class TurnBased {
     }
 
     public async GetRoomMembersDetail() {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let pkt = new TurnPacket(this.superThis);
         pkt.SetHead(Actions.TurnBased.ActionGetUsers);
         pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
@@ -138,6 +160,9 @@ export class TurnBased {
     }
 
     public async ChooseNext(whoIsNext: string | undefined = undefined) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let data = new TurnData(this.superThis);
         if (whoIsNext)
             data.Next = whoIsNext;
@@ -150,6 +175,9 @@ export class TurnBased {
     }
 
     public async TakeTurn(data: string | undefined, whoIsNext: string | undefined = undefined) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let dataIn = new TurnData(this.superThis);
         if (whoIsNext)
             dataIn.Next = whoIsNext;
@@ -163,6 +191,9 @@ export class TurnBased {
     }
 
     public async GetCurrentTurnMember() {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let pkt = new TurnPacket(this.superThis);
         pkt.SetHead(Actions.TurnBased.ActionCurrentTurnDetail);
         pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
@@ -170,6 +201,9 @@ export class TurnBased {
     }
 
     public async Vote(outcomes: { memberID: string, outcome: { value: number, rank: number } }[]) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let dataIn = new TurnData(this.superThis);
         dataIn.Outcomes = outcomes;
 
@@ -181,6 +215,9 @@ export class TurnBased {
     }
 
     public async AcceptVote(memberID: string) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let dataIn = new TurnData(this.superThis);
         dataIn.ID = memberID;
 
@@ -192,6 +229,9 @@ export class TurnBased {
     }
 
     public async SetOrUpdateProperty(type: PropertyType, data: { name: string, value: string }) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let dataIn = new TurnData(this.superThis);
 
         dataIn.Head = 1;
@@ -214,6 +254,9 @@ export class TurnBased {
     }
 
     public async RemoveProperty(type: PropertyType, name: string) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let dataIn = new TurnData(this.superThis);
 
         dataIn.Head = 2;
@@ -233,6 +276,9 @@ export class TurnBased {
     }
 
     public async LeaveRoom(whoIsNext: string | undefined = undefined) {
+        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
         let data = new TurnData(this.superThis);
         data.Next = whoIsNext;
 
