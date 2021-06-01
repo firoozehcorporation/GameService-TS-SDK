@@ -7,7 +7,7 @@ import { Command } from './Controllers/Command';
 import { TurnBased as TurnbasedController } from './Controllers/ُTurnBased';
 import { RealTime as RealTimeController } from './Controllers/RealTime';
 
-import WebSocket from 'ws';
+import nWebSocket from 'ws';
 
 export class GSLive {
     constructor(public superThis: GameService) {
@@ -22,7 +22,7 @@ export class GSLive {
         this.Chats = new Chats(superThis);
     }
 
-    static CommandConnection: WebSocket | undefined = undefined
+    static CommandConnection: WebSocket | nWebSocket | undefined = undefined
 
     IsCommandAvailable(): boolean {
         return true

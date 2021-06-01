@@ -9,6 +9,8 @@ export class RealTime {
 
     // Functions
     public async CreateRoom(options: CreateRoomOptions) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (this.superThis.GSLive.RealTimeController.RoomID)
             throw "User is already in game room, please left from it first.";
 
@@ -31,6 +33,8 @@ export class RealTime {
     }
 
     public async AutoMatch(options: AutoMatchOptions) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (this.superThis.GSLive.Command.isInAutoMatchQueue)
             throw "User is in automatch queue already";
         if (this.superThis.GSLive.RealTimeController.RoomID)
@@ -52,6 +56,8 @@ export class RealTime {
     }
 
     public async CancelAutoMatch() {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (!this.superThis.GSLive.Command.isInAutoMatchQueue)
             throw "User is not in automatch queue";
 
@@ -62,6 +68,8 @@ export class RealTime {
     }
 
     public async GetAvailableRooms(role: string, limit: number) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         let data = new Data(this.superThis);
         data.SetMax(limit);
         data.SetRole(role);
@@ -74,6 +82,8 @@ export class RealTime {
     }
 
     public async JoinRoom(roomID: string, extra: string | undefined = undefined, password: string | undefined = undefined) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (this.superThis.GSLive.RealTimeController.RoomID)
             throw "User is already in game room, please left from it first.";
 
@@ -90,6 +100,8 @@ export class RealTime {
     }
 
     public async FindMember(query: string, limit: number) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         let data = new Data(this.superThis);
         data.SetUser(query);
         data.SetMax(limit);
@@ -102,6 +114,8 @@ export class RealTime {
     }
 
     public async InviteUser(roomID: string, userID: string) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         let data = new Data(this.superThis);
         data.SetID(roomID);
         data.SetUser(userID);
@@ -114,6 +128,8 @@ export class RealTime {
     }
 
     public async GetInviteInbox() {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         let data = new Data(this.superThis);
         data.SetSyncMode(2);
 
@@ -125,6 +141,8 @@ export class RealTime {
     }
 
     public async AcceptInvite(inviteID: string, extra: string) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (this.superThis.GSLive.RealTimeController.RoomID)
             throw "User is already in game room, please left from it first.";
 
@@ -328,6 +346,6 @@ export class RealTime {
     public CurrentRoomInfoReceived: (roomData: any) => void = () => { }
     public RoomMembersDetailReceived: (members: any[]) => void = () => { }
     public NewMessageReceived: (event: any) => void = () => { }
-    public LeftRoom: (member: any) => void = () => { }
+    public OnLeaveRoom: (member: any) => void = () => { }
     public OnPropertyEvent: (PropertyUpdate: any) => void = () => { }
 }

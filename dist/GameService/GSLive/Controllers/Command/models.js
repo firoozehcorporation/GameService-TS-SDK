@@ -7,6 +7,8 @@ class Packet {
         this.superThis = superThis;
         this.Send = () => {
             let serilized = this.ToString();
+            if (__1.GSLive.CommandConnection === undefined)
+                throw "User not connected to Command Server";
             __1.GSLive.CommandConnection.send(serilized);
         };
     }

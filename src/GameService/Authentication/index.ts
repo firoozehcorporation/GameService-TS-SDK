@@ -36,8 +36,9 @@ export class Authentication {
                 throw e
         }
     }
-    LoginWithToken(Token: string) {
+    async LoginWithToken(Token: string) {
         this.userToken = Token;
+        await this.Start()
     }
     async SignUp(NickName: string, Email: string, Password: string): Promise<string> {
         try {

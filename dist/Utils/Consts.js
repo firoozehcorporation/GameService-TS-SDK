@@ -3,16 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Actions = exports.Url = void 0;
 var ApiUrls;
 (function (ApiUrls) {
-    // Endpoint = "https://api.gamesservice.ir",
-    ApiUrls["Endpoint"] = "http://localhost:4001";
-    ApiUrls["Login"] = "/Auth/app/login";
-    ApiUrls["Start"] = "/Auth/start";
-    ApiUrls["SMSAuth"] = "/Auth/phone";
+    ApiUrls["Endpoint"] = "https://api.gamesservice.ir";
+    // Endpoint = "http://localhost:4001",
+    ApiUrls["Login"] = "/auth/app/login";
+    ApiUrls["Start"] = "/auth/start";
+    ApiUrls["SMSAuth"] = "/auth/phone";
     ApiUrls["SMSAuthCallback"] = "/Auth/phone/callback";
-    ApiUrls["GetCurrentPlayer"] = "/v1/Member";
+    ApiUrls["GetCurrentPlayer"] = "/v1/member/";
     ApiUrls["GetCurrentUser"] = "/v1/User";
     ApiUrls["LastLoginInfo"] = "/auth/app/login/info";
-    ApiUrls["Devices"] = "/v1/Devices";
+    ApiUrls["Devices"] = "/v1/devices";
     ApiUrls["GetAchievements"] = "/v1/achievement";
     ApiUrls["GetAchievementsv2"] = "/v2/achievement";
     ApiUrls["DownloadAssets"] = "/game/";

@@ -1,6 +1,6 @@
 import { Actions, Url } from '../../../../Utils/Consts';
 import { GameService } from '../../../index';
-import WebSocket from 'ws';
+import nWebSocket from 'ws';
 import { Area, Packet, Payload, StartGame } from './models';
 import { Message } from '../../Chats/models';
 import { Log } from '../../../../Utils/Logger';
@@ -13,17 +13,23 @@ export class Command {
     isInAutoMatchQueue = false;
 
     public Initilize() {
-        Log("[Command]", `[Connecting][${Url.Command.Endpoint}]`);
-        GSLive.CommandConnection = new WebSocket(Url.Command.Endpoint);
+        if (typeof window === 'undefined') {
+            Log("[Command]", `[Node] [Connecting] [${Url.Command.Endpoint}]`);
+            GSLive.CommandConnection = new nWebSocket(Url.Command.Endpoint);
+        } else {
+            Log("[Command]", `[Browser] [Connecting] [${Url.Command.Endpoint}]`);
+            GSLive.CommandConnection = new WebSocket(Url.Command.Endpoint);
+        }
         GSLive.CommandConnection!.onopen = this.OnConnect
         GSLive.CommandConnection!.onmessage = this.OnReceive;
         GSLive.CommandConnection!.onclose = this.onDisconnect;
-        GSLive.CommandConnection!.onerror = function (error) {
-            throw error;
+
+        GSLive.CommandConnection!.onerror = (err: nWebSocket.ErrorEvent) => {
+            throw err;
         };
     }
 
-    protected OnConnect = (e: WebSocket.OpenEvent) => {
+    protected OnConnect = (e: nWebSocket.OpenEvent) => {
         // Send Auth pkt
         let payload = new Payload(this.superThis);
         payload.SetGameID(this.superThis.Authentication.gameID);
@@ -35,7 +41,7 @@ export class Command {
         pkt.Send();
     }
 
-    protected OnReceive = async (event: WebSocket.MessageEvent) => {
+    protected OnReceive = async (event: nWebSocket.MessageEvent) => {
         // Log("[Command]", `[OnReceive]: ${ event.data }`);
 
         let packet = new Packet(this.superThis)
@@ -122,7 +128,7 @@ export class Command {
         }
     }
 
-    private onDisconnect = (event: WebSocket.CloseEvent) => {
+    private onDisconnect = (event: nWebSocket.CloseEvent) => {
         if (event.wasClean) {
             Log("[Command]", `[close] Connection closed cleanly, code = ${event.code} reason = ${event.reason}`);
         } else {

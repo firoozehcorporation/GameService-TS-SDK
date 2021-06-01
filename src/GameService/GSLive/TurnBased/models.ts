@@ -66,3 +66,20 @@ export class AutoMatchOptions {
     isPersist: boolean = false
     extra: string | null
 }
+
+export class Outcome {
+    private _Value: number | undefined;
+    public get Value(): number | undefined {
+        return this._Value;
+    }
+    public set Value(value: number | undefined) {
+        this._Value = value;
+    }
+    private _Rank: number | undefined;
+    public get Rank(): number | undefined {
+        return this._Rank;
+    }
+    public set Rank(value: number | undefined) {
+        this._Rank = value;
+    }
+}

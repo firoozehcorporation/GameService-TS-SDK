@@ -90,9 +90,14 @@ export class RealTime {
                 break
             case Actions.RealTime.ActionLeave:
                 let member = JSON.parse(BufferToString(packet.Payload!));
-                this.superThis.GSLive.RealTime.LeftRoom(member)
-                if (member!.user!.isMe)
+                this.superThis.GSLive.RealTime.OnLeaveRoom(member)
+                if (member!.user!.isMe) {
                     RealTime.Connection?.close()
+                    this.realtimeToken = BigInt(0)
+                    this.ConnectHash = ""
+                    this.RoomID = ""
+                    RealTime.Connection = undefined;
+                }
                 break
             // case Actions.RealTime.ActionDestroy:
 

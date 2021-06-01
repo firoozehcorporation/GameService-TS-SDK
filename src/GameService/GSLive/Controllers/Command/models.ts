@@ -57,6 +57,9 @@ export class Packet {
     }
     Send = () => {
         let serilized = this.ToString()
+        if (GSLive.CommandConnection === undefined)
+            throw "User not connected to Command Server";
+
         GSLive.CommandConnection!.send(serilized);
     }
 }

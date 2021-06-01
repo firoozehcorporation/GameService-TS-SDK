@@ -69,7 +69,10 @@ class Authentication {
         });
     }
     LoginWithToken(Token) {
-        this.userToken = Token;
+        return __awaiter(this, void 0, void 0, function* () {
+            this.userToken = Token;
+            yield this.Start();
+        });
     }
     SignUp(NickName, Email, Password) {
         return __awaiter(this, void 0, void 0, function* () {

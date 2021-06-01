@@ -15,7 +15,6 @@ class TurnBased {
         this.turnbasedToken = "";
         this.RoomID = "";
         this.OnConnect = (e) => {
-            Logger_1.Log("[TurnBased]", "[onConnect]");
             // Send Auth pkt
             let payload = new models_1.Payload(this.superThis);
             payload.SetGameID(this.RoomID);
@@ -26,7 +25,8 @@ class TurnBased {
             pkt.Send();
         };
         this.OnReceive = (event) => {
-            Logger_1.Log("[TurnBased]", `[OnReceive]: ${event.data}`);
+            // Log("[TurnBased]", `[OnReceive]: ${event.data}`);
+            var _a;
             let packet = new models_2.Packet(this.superThis);
             packet.Parse(event.data);
             switch (packet.GetHead()) {
@@ -50,6 +50,12 @@ class TurnBased {
                 case Consts_1.Actions.TurnBased.ActionLeave:
                     let member = JSON.parse(packet.GetData());
                     this.superThis.GSLive.TurnBased.OnLeaveRoom(member);
+                    if (member.user.isMe) {
+                        (_a = TurnBased.Connection) === null || _a === void 0 ? void 0 : _a.close();
+                        this.turnbasedToken = "";
+                        this.RoomID = "";
+                        TurnBased.Connection = undefined;
+                    }
                     break;
                 case Consts_1.Actions.TurnBased.ActionVote:
                     let voteDetail = JSON.parse(packet.GetData());
@@ -58,6 +64,8 @@ class TurnBased {
                     this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member, vote.Outcomes);
                     break;
                 case Consts_1.Actions.TurnBased.ActionAcceptVote:
+                    let result = JSON.parse(packet.GetData());
+                    this.superThis.GSLive.TurnBased.OnComplete(result);
                     break;
                 case Consts_1.Actions.TurnBased.ActionGetUsers:
                     let members = JSON.parse(packet.GetData());
@@ -96,14 +104,21 @@ class TurnBased {
         };
     }
     Initilize(RoomID, Endpoint, Port) {
-        Logger_1.Log("[TurnBased]", `[TurnBased] [Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
+        Logger_1.Log("[TurnBased]", `[Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
         this.RoomID = RoomID;
-        TurnBased.Connection = new ws_1.default(`ws://${Endpoint}:${Port}`);
+        if (typeof window === 'undefined') {
+            Logger_1.Log("[TurnBased]", `[Node] [Connecting] [ws://${Endpoint}:${Port}]`);
+            TurnBased.Connection = new ws_1.default(`ws://${Endpoint}:${Port}`);
+        }
+        else {
+            Logger_1.Log("[TurnBased]", `[Browser] [Connecting] [ws://${Endpoint}:${Port}]`);
+            TurnBased.Connection = new WebSocket(`ws://${Endpoint}:${Port}`);
+        }
         TurnBased.Connection.onopen = this.OnConnect;
         TurnBased.Connection.onmessage = this.OnReceive;
         TurnBased.Connection.onclose = this.onDisconnect;
-        TurnBased.Connection.onerror = function (error) {
-            throw error;
+        TurnBased.Connection.onerror = (err) => {
+            throw err;
         };
     }
 }

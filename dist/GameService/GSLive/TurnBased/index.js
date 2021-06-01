@@ -39,6 +39,8 @@ class TurnBased {
     // Functions
     CreateRoom(options) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             if (this.superThis.GSLive.TurnbasedController.RoomID)
                 throw "User is already in game room, please left from it first.";
             let data = new models_3.Data(this.superThis);
@@ -60,6 +62,8 @@ class TurnBased {
     }
     AutoMatch(options) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             if (this.superThis.GSLive.Command.isInAutoMatchQueue)
                 throw "User is in automatch queue already";
             if (this.superThis.GSLive.TurnbasedController.RoomID)
@@ -80,6 +84,8 @@ class TurnBased {
     }
     CancelAutoMatch() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             if (!this.superThis.GSLive.Command.isInAutoMatchQueue)
                 throw "User is not in automatch queue";
             let pkt = new models_3.Packet(this.superThis);
@@ -90,6 +96,8 @@ class TurnBased {
     }
     GetAvailableRooms(role, limit) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             let data = new models_3.Data(this.superThis);
             data.SetMax(limit);
             data.SetRole(role);
@@ -102,6 +110,8 @@ class TurnBased {
     }
     JoinRoom(roomID, extra = undefined, password = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             if (this.superThis.GSLive.TurnbasedController.RoomID)
                 throw "User is already in game room, please left from it first.";
             let data = new models_3.Data(this.superThis);
@@ -117,6 +127,8 @@ class TurnBased {
     }
     FindMember(query, limit) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             let data = new models_3.Data(this.superThis);
             data.SetUser(query);
             data.SetMax(limit);
@@ -129,6 +141,8 @@ class TurnBased {
     }
     InviteUser(roomID, userID) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             let data = new models_3.Data(this.superThis);
             data.SetID(roomID);
             data.SetUser(userID);
@@ -141,6 +155,8 @@ class TurnBased {
     }
     GetInviteInbox() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             let data = new models_3.Data(this.superThis);
             data.SetSyncMode(1);
             let pkt = new models_3.Packet(this.superThis);
@@ -152,6 +168,8 @@ class TurnBased {
     }
     AcceptInvite(inviteID, extra) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.superThis.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
             if (this.superThis.GSLive.TurnbasedController.RoomID)
                 throw "User is already in game room, please left from it first.";
             let data = new models_3.Data(this.superThis);
@@ -228,7 +246,14 @@ class TurnBased {
             if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
                 throw "User is not in any game room";
             let dataIn = new models_1.Data(this.superThis);
-            dataIn.Outcomes = outcomes;
+            let outcomesS = {};
+            Object.keys(outcomes).map(key => {
+                outcomesS[key] = {
+                    "0": outcomes[key].Rank,
+                    "1": `${outcomes[key].Value}`
+                };
+            });
+            dataIn.Outcomes = outcomesS;
             let pkt = new models_2.Packet(this.superThis);
             pkt.SetHead(Consts_1.Actions.TurnBased.ActionVote);
             pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);

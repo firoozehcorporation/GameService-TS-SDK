@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AutoMatchOptions = exports.CreateRoomOptions = exports.PropertyType = exports.Data = void 0;
+exports.Outcome = exports.AutoMatchOptions = exports.CreateRoomOptions = exports.PropertyType = exports.Data = void 0;
 class Data {
     constructor(superThis) {
         this.superThis = superThis;
@@ -58,3 +58,18 @@ class AutoMatchOptions {
     }
 }
 exports.AutoMatchOptions = AutoMatchOptions;
+class Outcome {
+    get Value() {
+        return this._Value;
+    }
+    set Value(value) {
+        this._Value = value;
+    }
+    get Rank() {
+        return this._Rank;
+    }
+    set Rank(value) {
+        this._Rank = value;
+    }
+}
+exports.Outcome = Outcome;

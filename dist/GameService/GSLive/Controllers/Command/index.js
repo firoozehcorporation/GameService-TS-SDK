@@ -126,13 +126,19 @@ class Command {
         };
     }
     Initilize() {
-        Logger_1.Log("[Command]", `[Connecting][${Consts_1.Url.Command.Endpoint}]`);
-        __1.GSLive.CommandConnection = new ws_1.default(Consts_1.Url.Command.Endpoint);
+        if (typeof window === 'undefined') {
+            Logger_1.Log("[Command]", `[Node] [Connecting] [${Consts_1.Url.Command.Endpoint}]`);
+            __1.GSLive.CommandConnection = new ws_1.default(Consts_1.Url.Command.Endpoint);
+        }
+        else {
+            Logger_1.Log("[Command]", `[Browser] [Connecting] [${Consts_1.Url.Command.Endpoint}]`);
+            __1.GSLive.CommandConnection = new WebSocket(Consts_1.Url.Command.Endpoint);
+        }
         __1.GSLive.CommandConnection.onopen = this.OnConnect;
         __1.GSLive.CommandConnection.onmessage = this.OnReceive;
         __1.GSLive.CommandConnection.onclose = this.onDisconnect;
-        __1.GSLive.CommandConnection.onerror = function (error) {
-            throw error;
+        __1.GSLive.CommandConnection.onerror = (err) => {
+            throw err;
         };
     }
 }

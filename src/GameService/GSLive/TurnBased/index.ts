@@ -1,6 +1,6 @@
 import { GameService } from '../..';
 import { Actions } from '../../../Utils/Consts';
-import { PropertyType, CreateRoomOptions, AutoMatchOptions, Data as TurnData } from './models';
+import { PropertyType, CreateRoomOptions, AutoMatchOptions, Data as TurnData, Outcome } from './models';
 import { JoinDetail, Packet as TurnPacket, PropertyChange } from '../Controllers/ُTurnBased/models';
 import { Data, Packet } from '../Controllers/Command/models';
 import { Member } from '../../Player/models';
@@ -10,6 +10,8 @@ export class TurnBased {
 
     // Functions
     public async CreateRoom(options: CreateRoomOptions) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (this.superThis.GSLive.TurnbasedController.RoomID)
             throw "User is already in game room, please left from it first.";
 
@@ -32,6 +34,8 @@ export class TurnBased {
     }
 
     public async AutoMatch(options: AutoMatchOptions) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (this.superThis.GSLive.Command.isInAutoMatchQueue)
             throw "User is in automatch queue already";
         if (this.superThis.GSLive.TurnbasedController.RoomID)
@@ -53,6 +57,8 @@ export class TurnBased {
     }
 
     public async CancelAutoMatch() {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (!this.superThis.GSLive.Command.isInAutoMatchQueue)
             throw "User is not in automatch queue";
         let pkt = new Packet(this.superThis);
@@ -62,6 +68,8 @@ export class TurnBased {
     }
 
     public async GetAvailableRooms(role: string, limit: number) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         let data = new Data(this.superThis);
         data.SetMax(limit);
         data.SetRole(role);
@@ -74,6 +82,8 @@ export class TurnBased {
     }
 
     public async JoinRoom(roomID: string, extra: string | undefined = undefined, password: string | undefined = undefined) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
         if (this.superThis.GSLive.TurnbasedController.RoomID)
             throw "User is already in game room, please left from it first.";
 
@@ -90,6 +100,9 @@ export class TurnBased {
     }
 
     public async FindMember(query: string, limit: number) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
+
         let data = new Data(this.superThis);
         data.SetUser(query);
         data.SetMax(limit);
@@ -102,6 +115,9 @@ export class TurnBased {
     }
 
     public async InviteUser(roomID: string, userID: string) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
+
         let data = new Data(this.superThis);
         data.SetID(roomID);
         data.SetUser(userID);
@@ -114,6 +130,9 @@ export class TurnBased {
     }
 
     public async GetInviteInbox() {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
+
         let data = new Data(this.superThis);
         data.SetSyncMode(1);
 
@@ -125,6 +144,9 @@ export class TurnBased {
     }
 
     public async AcceptInvite(inviteID: string, extra: string) {
+        if (this.superThis.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
+
         if (this.superThis.GSLive.TurnbasedController.RoomID)
             throw "User is already in game room, please left from it first.";
 
@@ -200,12 +222,19 @@ export class TurnBased {
         pkt.Send();
     }
 
-    public async Vote(outcomes: { memberID: string, outcome: { value: number, rank: number } }[]) {
+    public async Vote(outcomes: { [memberID: string]: Outcome }) {
         if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let dataIn = new TurnData(this.superThis);
-        dataIn.Outcomes = outcomes;
+        let outcomesS: any = {};
+        Object.keys(outcomes).map(key => {
+            outcomesS[key] = {
+                "0": outcomes[key].Rank,
+                "1": `${outcomes[key].Value}`
+            }
+        })
+        dataIn.Outcomes = outcomesS;
 
         let pkt = new TurnPacket(this.superThis);
         pkt.SetHead(Actions.TurnBased.ActionVote);
@@ -304,7 +333,7 @@ export class TurnBased {
     public OnTakeTurn: (sender: object, turn: object) => void = () => { };
     public OnCurrentTurnMember: (currentMember: Member) => void = () => { };
     public OnVoteReceived: (sender: object, vote: object) => void = () => { };
-    public OnComplete: (sneder: object, complete: object) => void = () => { };
+    public OnComplete: (gameResult: object) => void = () => { };
     public OnPropertyUpdated: (payload: PropertyChange) => void = () => { };
     public OnLeaveRoom: (member: any) => void = () => { };
 }

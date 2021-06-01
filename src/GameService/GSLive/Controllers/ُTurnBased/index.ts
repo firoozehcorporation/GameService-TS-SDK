@@ -2,7 +2,7 @@ import { Actions } from '../../../../Utils/Consts';
 import { GameService } from '../../../index';
 import { Payload } from '../Command/models';
 import { JoinDetail, Packet, PropertyChange, Room, VoteDetail } from './models';
-import WebSocket from 'ws';
+import nWebSocket from 'ws';
 import { Log } from '../../../../Utils/Logger';
 
 export class TurnBased {
@@ -10,23 +10,28 @@ export class TurnBased {
 
     turnbasedToken: string = "";
     RoomID: string = "";
-    static Connection: WebSocket | undefined = undefined
+    static Connection: nWebSocket | WebSocket | undefined = undefined
 
     public Initilize(RoomID: string, Endpoint: string, Port: number) {
-        Log("[TurnBased]", `[TurnBased] [Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
+        Log("[TurnBased]", `[Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
 
         this.RoomID = RoomID;
-
-        TurnBased.Connection = new WebSocket(`ws://${Endpoint}:${Port}`);
+        if (typeof window === 'undefined') {
+            Log("[TurnBased]", `[Node] [Connecting] [ws://${Endpoint}:${Port}]`);
+            TurnBased.Connection = new nWebSocket(`ws://${Endpoint}:${Port}`);
+        } else {
+            Log("[TurnBased]", `[Browser] [Connecting] [ws://${Endpoint}:${Port}]`);
+            TurnBased.Connection = new WebSocket(`ws://${Endpoint}:${Port}`);
+        }
         TurnBased.Connection!.onopen = this.OnConnect
         TurnBased.Connection!.onmessage = this.OnReceive;
         TurnBased.Connection!.onclose = this.onDisconnect;
-        TurnBased.Connection!.onerror = function (error) {
-            throw error;
+        TurnBased.Connection!.onerror = (err: nWebSocket.ErrorEvent) => {
+            throw err;
         };
+
     }
-    protected OnConnect = (e: WebSocket.OpenEvent) => {
-        Log("[TurnBased]", "[onConnect]")
+    protected OnConnect = (e: nWebSocket.OpenEvent) => {
         // Send Auth pkt
         let payload = new Payload(this.superThis);
         payload.SetGameID(this.RoomID);
@@ -38,8 +43,8 @@ export class TurnBased {
         pkt.Send();
     }
 
-    protected OnReceive = (event: WebSocket.MessageEvent) => {
-        Log("[TurnBased]", `[OnReceive]: ${event.data}`);
+    protected OnReceive = (event: nWebSocket.MessageEvent) => {
+        // Log("[TurnBased]", `[OnReceive]: ${event.data}`);
 
         let packet = new Packet(this.superThis)
         packet.Parse(event.data);
@@ -65,6 +70,12 @@ export class TurnBased {
             case Actions.TurnBased.ActionLeave:
                 let member = JSON.parse(packet.GetData()!);
                 this.superThis.GSLive.TurnBased.OnLeaveRoom(member)
+                if (member!.user!.isMe) {
+                    TurnBased.Connection?.close()
+                    this.turnbasedToken = ""
+                    this.RoomID = ""
+                    TurnBased.Connection = undefined;
+                }
                 break
             case Actions.TurnBased.ActionVote:
                 let voteDetail = JSON.parse(packet.GetData()!);
@@ -73,7 +84,8 @@ export class TurnBased {
                 this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member!, vote.Outcomes!)
                 break
             case Actions.TurnBased.ActionAcceptVote:
-
+                let result = JSON.parse(packet.GetData()!);
+                this.superThis.GSLive.TurnBased.OnComplete(result)
                 break
             case Actions.TurnBased.ActionGetUsers:
                 let members = JSON.parse(packet.GetData()!);
@@ -101,7 +113,7 @@ export class TurnBased {
         }
     }
 
-    private onDisconnect = (event: WebSocket.CloseEvent) => {
+    private onDisconnect = (event: nWebSocket.CloseEvent) => {
         if (event.wasClean) {
             Log("[TurnBased]", `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {
