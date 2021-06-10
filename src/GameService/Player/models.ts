@@ -13,21 +13,55 @@ export interface Member {
     _id: string
     logo: string
     name: string
+    label: string
+    tags: string
     extra: string
     user: User
     online: boolean
 }
 
-export interface MemberInfo {
-    Id: string
-    Logo: string
-    Name: string
-    Email: string
-    PhoneNumber: string
+export class MemberInfo {
+    Id: string | undefined
+    Logo: string | undefined
+    Name: string | undefined
+    Label: string | undefined
+    Tags: string | undefined
+    Extra: string | undefined
+    Email: string | undefined
+    PhoneNumber: string | undefined
+
+    Parse = (inputJ: any) => {
+        this.Id = inputJ["_id"]
+        this.Logo = inputJ["logo"]
+        this.Name = inputJ["name"]
+        this.Label = inputJ["label"]
+        this.Tags = inputJ["tags"]
+        this.Extra = inputJ["extra"]
+        this.Email = inputJ["email"]
+        this.PhoneNumber = inputJ["phonenumber"]
+    }
 }
 
-export interface Profile {
+export class Profile {
+    Name: string | undefined
+    Label: string | undefined
+    Tags: string[] | undefined
+    Extra: string | undefined
+    Options: string | undefined
+    Email: string | undefined
+    Mobile: string | undefined
 
+    Export() {
+        return {
+            "name": this.Name,
+            "label": this.Label,
+            "tags": this.Tags,
+            "extra": this.Extra,
+            "options": this.Options,
+            "email": this.Email,
+            "mobile": this.Mobile,
+        }
+    }
 }
 
 export interface ActiveDevice {

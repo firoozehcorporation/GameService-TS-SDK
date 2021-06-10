@@ -42,3 +42,4 @@ class Assets {
     }
 }
 exports.Assets = Assets;
+//# sourceMappingURL=index.js.map

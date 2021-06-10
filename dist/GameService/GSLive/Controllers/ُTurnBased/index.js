@@ -124,3 +124,4 @@ class TurnBased {
 }
 exports.TurnBased = TurnBased;
 TurnBased.Connection = undefined;
+//# sourceMappingURL=index.js.map

@@ -23,6 +23,8 @@ export class GSLive {
     }
 
     static CommandConnection: WebSocket | nWebSocket | undefined = undefined
+    Cipher: string = "";
+    isEncriptionActive = false;
 
     IsCommandAvailable(): boolean {
         return true

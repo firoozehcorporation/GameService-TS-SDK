@@ -4,6 +4,7 @@ import { Payload } from '../Command/models';
 import { JoinDetail, Packet, PropertyChange, Room, VoteDetail } from './models';
 import nWebSocket from 'ws';
 import { Log } from '../../../../Utils/Logger';
+import { JoinPayload } from '../RealTime/models';
 
 export class TurnBased {
     constructor(public superThis: GameService) { }
@@ -13,9 +14,10 @@ export class TurnBased {
     static Connection: nWebSocket | WebSocket | undefined = undefined
 
     public Initilize(RoomID: string, Endpoint: string, Port: number) {
-        Log("[TurnBased]", `[Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
-
         this.RoomID = RoomID;
+        if (Endpoint == undefined || Port == undefined)
+            return console.error("No valid area returned from Command", RoomID, Endpoint, Port);
+
         if (typeof window === 'undefined') {
             Log("[TurnBased]", `[Node] [Connecting] [ws://${Endpoint}:${Port}]`);
             TurnBased.Connection = new nWebSocket(`ws://${Endpoint}:${Port}`);
@@ -40,14 +42,14 @@ export class TurnBased {
         let pkt = new Packet(this.superThis);
         pkt.SetHead(Actions.TurnBased.ActionAuth);
         pkt.SetData(payload.ToString())
-        pkt.Send();
+        pkt.Send(false);
     }
 
     protected OnReceive = (event: nWebSocket.MessageEvent) => {
         // Log("[TurnBased]", `[OnReceive]: ${event.data}`);
 
         let packet = new Packet(this.superThis)
-        packet.Parse(event.data);
+        packet.Parse(event.data, this.superThis.GSLive.Cipher != "");
 
         switch (packet.GetHead()) {
             case Actions.TurnBased.ActionAuth:

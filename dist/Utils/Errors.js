@@ -12,3 +12,4 @@ exports.default = {
     Internal,
     Command
 };
+//# sourceMappingURL=Errors.js.map

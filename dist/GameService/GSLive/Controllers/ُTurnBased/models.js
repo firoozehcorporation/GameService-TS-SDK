@@ -252,3 +252,4 @@ class GameResult {
     }
 }
 exports.GameResult = GameResult;
+//# sourceMappingURL=models.js.map

@@ -5,3 +5,4 @@ function Log(location, input) {
     console.log(location, input);
 }
 exports.Log = Log;
+//# sourceMappingURL=Logger.js.map

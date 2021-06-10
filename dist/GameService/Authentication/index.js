@@ -192,3 +192,4 @@ class Authentication {
     }
 }
 exports.Authentication = Authentication;
+//# sourceMappingURL=index.js.map

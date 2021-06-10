@@ -156,3 +156,4 @@ class Table {
     }
 }
 exports.Table = Table;
+//# sourceMappingURL=index.js.map

@@ -38,3 +38,4 @@ function get() {
     return JSON.stringify(statis);
 }
 exports.get = get;
+//# sourceMappingURL=Statistics.js.map

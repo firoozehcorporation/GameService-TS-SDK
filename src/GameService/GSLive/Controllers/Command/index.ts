@@ -12,14 +12,20 @@ export class Command {
     commandToken: string = "";
     isInAutoMatchQueue = false;
 
-    public Initilize() {
+    public Initilize(relay: any) {
+        if (relay.ip == undefined || relay.port == undefined)
+            return console.error("No valid command returned from HttpServices", { relay });
         if (typeof window === 'undefined') {
-            Log("[Command]", `[Node] [Connecting] [${Url.Command.Endpoint}]`);
-            GSLive.CommandConnection = new nWebSocket(Url.Command.Endpoint);
+            Log("[Command]", `[Node] [Connecting] [${relay.ip}:${relay.port}]`);
+            GSLive.CommandConnection = new nWebSocket(`ws://${relay.ip}:${relay.port}`);
         } else {
-            Log("[Command]", `[Browser] [Connecting] [${Url.Command.Endpoint}]`);
-            GSLive.CommandConnection = new WebSocket(Url.Command.Endpoint);
+            Log("[Command]", `[Browser] [Connecting] [${relay.port}:${relay.port}]`);
+            GSLive.CommandConnection = new WebSocket(`ws://${relay.ip}:${relay.port}`);
         }
+        
+        this.superThis.GSLive.Cipher = relay.cipher;
+        this.superThis.GSLive.isEncriptionActive = relay.encription != "deactive";
+
         GSLive.CommandConnection!.onopen = this.OnConnect
         GSLive.CommandConnection!.onmessage = this.OnReceive;
         GSLive.CommandConnection!.onclose = this.onDisconnect;
@@ -30,6 +36,7 @@ export class Command {
     }
 
     protected OnConnect = (e: nWebSocket.OpenEvent) => {
+        // console.log("[Command] [Connected]")
         // Send Auth pkt
         let payload = new Payload(this.superThis);
         payload.SetGameID(this.superThis.Authentication.gameID);
@@ -38,14 +45,13 @@ export class Command {
         let pkt = new Packet(this.superThis);
         pkt.SetHead(Actions.Command.ActionAuth);
         pkt.SetData(payload.ToString())
-        pkt.Send();
+        pkt.Send(false);
     }
 
     protected OnReceive = async (event: nWebSocket.MessageEvent) => {
-        // Log("[Command]", `[OnReceive]: ${ event.data }`);
-
         let packet = new Packet(this.superThis)
-        packet.Parse(event.data);
+        packet.Parse(event.data, this.superThis.GSLive.Cipher != "" && this.commandToken != "");
+        // console.log(packet.Export())
 
         switch (packet.GetHead()) {
             case Actions.Command.ActionAuth:
@@ -108,7 +114,6 @@ export class Command {
 
                 break
             case Actions.Command.ActionJoinRoom:
-                let joinInfo = JSON.parse(packet.GetData()!)
                 // connect to relay
                 let start = new StartGame();
                 start.parse(packet.GetData()!)
@@ -123,7 +128,7 @@ export class Command {
             //     break
 
             case Actions.Error:
-                console.error(`[Error][Msg: ${packet.GetMsg()}]`)
+                console.error(`[Command] [Error] [Msg: ${packet.GetMsg()}]`)
                 break
         }
     }

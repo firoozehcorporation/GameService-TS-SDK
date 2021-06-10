@@ -45,3 +45,4 @@ class GameService {
     }
 }
 exports.GameService = GameService;
+//# sourceMappingURL=index.js.map

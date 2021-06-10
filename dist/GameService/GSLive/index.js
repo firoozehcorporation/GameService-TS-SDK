@@ -34,3 +34,4 @@ class GSLive {
 }
 exports.GSLive = GSLive;
 GSLive.CommandConnection = undefined;
+//# sourceMappingURL=index.js.map

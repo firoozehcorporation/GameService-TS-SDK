@@ -1,15 +1,46 @@
 import { GSLive } from '../..';
 import { GameService } from '../../../index';
+import buffer from 'buffer';
+
+export function Rc4(key: string, str: string) {
+    var s = [], j = 0, x, res = '';
+    for (var i = 0; i < 256; i++) {
+        s[i] = i;
+    }
+    for (i = 0; i < 256; i++) {
+        j = (j + s[i] + key.charCodeAt(i % key.length)) % 256;
+        x = s[i];
+        s[i] = s[j];
+        s[j] = x;
+    }
+    i = 0;
+    j = 0;
+    for (var y = 0; y < str.length; y++) {
+        i = (i + 1) % 256;
+        j = (j + s[i]) % 256;
+        x = s[i];
+        s[i] = s[j];
+        s[j] = x;
+        res += String.fromCharCode(str.charCodeAt(y) ^ s[(s[i] + s[j]) % 256]);
+    }
+    return res;
+}
 
 export class Packet {
     constructor(public superThis: GameService) { }
 
-    public Parse(input: any) {
+    public Parse(input: any, encription: boolean = true) {
         let inputJ = JSON.parse(input)
+        let data = inputJ["2"];
+        let msg = inputJ["3"];
+        if (this.superThis.GSLive.isEncriptionActive && encription) {
+            if (inputJ["2"]) data = Buffer.from(Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8")
+            if (inputJ["3"]) msg = Buffer.from(Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8")
+        }
         this.SetToken(inputJ["0"]);
         this.SetHead(inputJ["1"]);
-        this.SetData(inputJ["2"]);
-        this.SetMsg(inputJ["3"]);
+        this.SetData(data);
+        this.SetMsg(msg);
     }
 
     private Token: string | undefined
@@ -44,7 +75,7 @@ export class Packet {
         this.Msg = Msg;
     }
 
-    private Cast() {
+    Export() {
         return {
             "0": this.Token,
             "1": this.Head,
@@ -52,14 +83,35 @@ export class Packet {
             "3": this.Msg
         }
     }
-    ToString(): string {
-        return JSON.stringify(this.Cast())
+
+    private Cast(encription: boolean = true) {
+        if (this.superThis.GSLive.isEncriptionActive && encription) {
+            if (this.Data) {
+                let rc4 = Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Data!).toString("utf-8"));
+                let data = Buffer.from(rc4, "latin1").toString('base64');
+                this.Data = data;
+            }
+            if (this.Msg) {
+                let rc4 = Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Msg!).toString("utf-8"));
+                let msg = Buffer.from(rc4, "latin1").toString('base64')
+                this.Msg = msg;
+            }
+        }
+
+        return {
+            "0": this.Token,
+            "1": this.Head,
+            "2": this.Data,
+            "3": this.Msg
+        }
     }
-    Send = () => {
-        let serilized = this.ToString()
+    ToString(encription: boolean = true): string {
+        return JSON.stringify(this.Cast(encription))
+    }
+    Send = (encription: boolean = true) => {
+        let serilized = this.ToString(encription)
         if (GSLive.CommandConnection === undefined)
             throw "User not connected to Command Server";
-
         GSLive.CommandConnection!.send(serilized);
     }
 }

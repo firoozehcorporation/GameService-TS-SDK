@@ -2,16 +2,25 @@ import { TurnBased } from ".";
 import { GameService } from '../../../index';
 import { Member } from "../../../Player/models";
 import { PropertyType } from "../../TurnBased/models";
+import { Rc4 } from "../Command/models";
 
 export class Packet {
     constructor(public superThis: GameService) { }
 
-    public Parse(input: any) {
+    public Parse(input: any, encription: boolean = true) {
         let inputJ = JSON.parse(input)
+
+        let data = inputJ["2"];
+        let msg = inputJ["3"];
+        if (this.superThis.GSLive.isEncriptionActive && encription) {
+            if (inputJ["2"]) data = Buffer.from(Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8")
+            if (inputJ["3"]) msg = Buffer.from(Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8")
+        }
+
         this.SetToken(inputJ["0"]);
         this.SetHead(inputJ["1"]);
-        this.SetData(inputJ["2"]);
-        this.SetMsg(inputJ["3"]);
+        this.SetData(data);
+        this.SetMsg(msg);
     }
 
     private Token: string | undefined
@@ -46,7 +55,19 @@ export class Packet {
         this.Msg = Msg;
     }
 
-    private Cast() {
+    private Cast(encription: boolean = true) {
+        if (this.superThis.GSLive.isEncriptionActive && encription) {
+            if (this.Data) {
+                let rc4 = Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Data!).toString("utf-8"));
+                let data = Buffer.from(rc4, "latin1").toString('base64');
+                this.Data = data;
+            }
+            if (this.Msg) {
+                let rc4 = Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Msg!).toString("utf-8"));
+                let msg = Buffer.from(rc4, "latin1").toString('base64')
+                this.Msg = msg;
+            }
+        }
         return {
             "0": this.Token,
             "1": this.Head,
@@ -54,11 +75,11 @@ export class Packet {
             "3": this.Msg
         }
     }
-    ToString(): string {
-        return JSON.stringify(this.Cast())
+    ToString(encription: boolean = true): string {
+        return JSON.stringify(this.Cast(encription))
     }
-    Send = () => {
-        let serilized = this.ToString()
+    Send = (encription: boolean = true) => {
+        let serilized = this.ToString(encription)
         TurnBased.Connection!.send(serilized);
     }
 }
@@ -247,7 +268,7 @@ export class PropertyChange {
 
 export class JoinDetail {
     JoinType: number | undefined
-    Member: Member | undefined
+    UserJoined: Member | undefined
     Room: Room | undefined
     JoinOrder: number | undefined
 
@@ -256,7 +277,7 @@ export class JoinDetail {
         room.Parse(inputJ["2"])
 
         this.JoinType = inputJ["1"]
-        this.Member = inputJ["3"]
+        this.UserJoined = inputJ["3"]
         this.Room = room
         this.JoinOrder = inputJ["4"]
     }
@@ -264,7 +285,7 @@ export class JoinDetail {
     Export() {
         return {
             JoinType: this.JoinType,
-            Member: this.Member,
+            UserJoined: this.UserJoined,
             Room: this.Room?.Export(),
             JoinOrder: this.JoinOrder
         }

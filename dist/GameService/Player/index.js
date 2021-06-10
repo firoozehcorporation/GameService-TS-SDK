@@ -173,3 +173,4 @@ class Player {
     }
 }
 exports.Player = Player;
+//# sourceMappingURL=index.js.map

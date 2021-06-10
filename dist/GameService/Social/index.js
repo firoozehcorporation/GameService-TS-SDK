@@ -9,3 +9,4 @@ class Social {
     }
 }
 exports.Social = Social;
+//# sourceMappingURL=index.js.map

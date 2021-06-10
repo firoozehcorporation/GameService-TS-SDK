@@ -73,3 +73,4 @@ class Outcome {
     }
 }
 exports.Outcome = Outcome;
+//# sourceMappingURL=models.js.map

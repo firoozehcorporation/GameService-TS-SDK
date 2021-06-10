@@ -57,8 +57,9 @@ export class Player {
             })
 
             Log("GetLastLoginMemberInfo", data);
-
-            return data;
+            let memInfo = new MemberInfo();
+            memInfo.Parse(data)
+            return memInfo;
         } catch (e) {
             if (e && e.response) {
                 throw e.response.data.msg
@@ -68,17 +69,19 @@ export class Player {
     }
     async EditCurrentPlayerProfile(input: Profile): Promise<MemberInfo> {
         try {
-            let { data } = await axios.put(`${Url.Api.Endpoint}${Url.Api.GetCurrentPlayer}`, {
-                // "":input.
-            }, {
-                headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+            let { data } = await axios.put(`${Url.Api.Endpoint}${Url.Api.GetCurrentPlayer}`,
+                input.Export(),
+                {
+                    headers: {
+                        "x-access-token": this.superThis.Authentication.gameToken
+                    }
                 }
-            })
+            )
 
             Log("EditCurrentPlayerProfile", data);
-
-            return data;
+            let memInfo = new MemberInfo();
+            memInfo.Parse(data)
+            return memInfo;
         } catch (e) {
             if (e && e.response) {
                 throw e.response.data.msg
