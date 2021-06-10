@@ -96,7 +96,7 @@ class Player {
                         "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
-                Logger_1.Log("EditCurrentPlayerProfile", data);
+                // Log("EditCurrentPlayerProfile", data);
                 let memInfo = new models_1.MemberInfo();
                 memInfo.Parse(data);
                 return memInfo;

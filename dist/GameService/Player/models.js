@@ -10,6 +10,7 @@ class MemberInfo {
             this.Label = inputJ["label"];
             this.Tags = inputJ["tags"];
             this.Extra = inputJ["extra"];
+            this.GlobalProperty = inputJ["global_property"];
             this.Email = inputJ["email"];
             this.PhoneNumber = inputJ["phonenumber"];
         };
@@ -23,6 +24,7 @@ class Profile {
             "label": this.Label,
             "tags": this.Tags,
             "extra": this.Extra,
+            "global_property": this.GlobalProperty,
             "options": this.Options,
             "email": this.Email,
             "mobile": this.Mobile,
