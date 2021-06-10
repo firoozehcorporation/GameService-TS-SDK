@@ -15,6 +15,7 @@ export interface Member {
     name: string
     label: string
     tags: string
+    global_property: string
     extra: string
     user: User
     online: boolean
@@ -26,6 +27,7 @@ export class MemberInfo {
     Name: string | undefined
     Label: string | undefined
     Tags: string | undefined
+    GlobalProperty: string | undefined
     Extra: string | undefined
     Email: string | undefined
     PhoneNumber: string | undefined
@@ -37,6 +39,7 @@ export class MemberInfo {
         this.Label = inputJ["label"]
         this.Tags = inputJ["tags"]
         this.Extra = inputJ["extra"]
+        this.GlobalProperty = inputJ["global_property"]
         this.Email = inputJ["email"]
         this.PhoneNumber = inputJ["phonenumber"]
     }
@@ -47,6 +50,7 @@ export class Profile {
     Label: string | undefined
     Tags: string[] | undefined
     Extra: string | undefined
+    GlobalProperty: string | undefined
     Options: string | undefined
     Email: string | undefined
     Mobile: string | undefined
@@ -57,6 +61,7 @@ export class Profile {
             "label": this.Label,
             "tags": this.Tags,
             "extra": this.Extra,
+            "global_property": this.GlobalProperty,
             "options": this.Options,
             "email": this.Email,
             "mobile": this.Mobile,

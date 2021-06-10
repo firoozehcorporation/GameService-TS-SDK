@@ -78,7 +78,7 @@ export class Player {
                 }
             )
 
-            Log("EditCurrentPlayerProfile", data);
+            // Log("EditCurrentPlayerProfile", data);
             let memInfo = new MemberInfo();
             memInfo.Parse(data)
             return memInfo;

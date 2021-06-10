@@ -172,12 +172,13 @@ class Authentication {
                     "game": this.superThis.ClientID,
                     "system_info": Statistics.get(),
                     "secret": this.superThis.ClientSecret,
-                    "token": this.userToken
+                    "token": this.userToken,
+                    "connectionType": "wss"
                 });
                 // Log("Start", data);
                 this.gameToken = data.token;
                 this.gameID = data.game._id;
-                yield this.superThis.GSLive.Command.Initilize();
+                yield this.superThis.GSLive.Command.Initilize(data.command);
                 return data.token;
             }
             catch (e) {

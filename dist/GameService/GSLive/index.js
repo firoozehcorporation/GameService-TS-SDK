@@ -10,6 +10,8 @@ const RealTime_1 = require("./Controllers/RealTime");
 class GSLive {
     constructor(superThis) {
         this.superThis = superThis;
+        this.Cipher = "";
+        this.isEncriptionActive = false;
         // controllers
         this.Command = new Command_1.Command(superThis);
         this.TurnbasedController = new _TurnBased_1.TurnBased(superThis);

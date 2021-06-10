@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Player = void 0;
 const Consts_1 = require("../../Utils/Consts");
+const models_1 = require("./models");
 const Logger_1 = require("../../Utils/Logger");
 const axios_1 = __importDefault(require("axios"));
 const uuid_1 = require("uuid");
@@ -74,7 +75,9 @@ class Player {
                     }
                 });
                 Logger_1.Log("GetLastLoginMemberInfo", data);
-                return data;
+                let memInfo = new models_1.MemberInfo();
+                memInfo.Parse(data);
+                return memInfo;
             }
             catch (e) {
                 if (e && e.response) {
@@ -88,15 +91,15 @@ class Player {
     EditCurrentPlayerProfile(input) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { data } = yield axios_1.default.put(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetCurrentPlayer}`, {
-                // "":input.
-                }, {
+                let { data } = yield axios_1.default.put(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetCurrentPlayer}`, input.Export(), {
                     headers: {
                         "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("EditCurrentPlayerProfile", data);
-                return data;
+                let memInfo = new models_1.MemberInfo();
+                memInfo.Parse(data);
+                return memInfo;
             }
             catch (e) {
                 if (e && e.response) {

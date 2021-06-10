@@ -22,13 +22,13 @@ class TurnBased {
             let pkt = new models_2.Packet(this.superThis);
             pkt.SetHead(Consts_1.Actions.TurnBased.ActionAuth);
             pkt.SetData(payload.ToString());
-            pkt.Send();
+            pkt.Send(false);
         };
         this.OnReceive = (event) => {
             // Log("[TurnBased]", `[OnReceive]: ${event.data}`);
             var _a;
             let packet = new models_2.Packet(this.superThis);
-            packet.Parse(event.data);
+            packet.Parse(event.data, this.superThis.GSLive.Cipher != "");
             switch (packet.GetHead()) {
                 case Consts_1.Actions.TurnBased.ActionAuth:
                     this.turnbasedToken = packet.GetToken();
@@ -104,8 +104,9 @@ class TurnBased {
         };
     }
     Initilize(RoomID, Endpoint, Port) {
-        Logger_1.Log("[TurnBased]", `[Connecting] [${RoomID}] [ws://${Endpoint}:${Port}]`);
         this.RoomID = RoomID;
+        if (Endpoint == undefined || Port == undefined)
+            return console.error("No valid area returned from Command", RoomID, Endpoint, Port);
         if (typeof window === 'undefined') {
             Logger_1.Log("[TurnBased]", `[Node] [Connecting] [ws://${Endpoint}:${Port}]`);
             TurnBased.Connection = new ws_1.default(`ws://${Endpoint}:${Port}`);

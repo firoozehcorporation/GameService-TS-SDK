@@ -25,6 +25,7 @@ class Command {
         this.commandToken = "";
         this.isInAutoMatchQueue = false;
         this.OnConnect = (e) => {
+            // console.log("[Command] [Connected]")
             // Send Auth pkt
             let payload = new models_1.Payload(this.superThis);
             payload.SetGameID(this.superThis.Authentication.gameID);
@@ -32,13 +33,13 @@ class Command {
             let pkt = new models_1.Packet(this.superThis);
             pkt.SetHead(Consts_1.Actions.Command.ActionAuth);
             pkt.SetData(payload.ToString());
-            pkt.Send();
+            pkt.Send(false);
         };
         this.OnReceive = (event) => __awaiter(this, void 0, void 0, function* () {
-            // Log("[Command]", `[OnReceive]: ${ event.data }`);
             var _a;
             let packet = new models_1.Packet(this.superThis);
-            packet.Parse(event.data);
+            packet.Parse(event.data, this.superThis.GSLive.Cipher != "" && this.commandToken != "");
+            // console.log(packet.Export())
             switch (packet.GetHead()) {
                 case Consts_1.Actions.Command.ActionAuth:
                     this.commandToken = packet.GetToken();
@@ -98,7 +99,6 @@ class Command {
                 case Consts_1.Actions.Command.ActionGetRooms:
                     break;
                 case Consts_1.Actions.Command.ActionJoinRoom:
-                    let joinInfo = JSON.parse(packet.GetData());
                     // connect to relay
                     let start = new models_1.StartGame();
                     start.parse(packet.GetData());
@@ -111,7 +111,7 @@ class Command {
                 // case Actions.Command.ActionKickUser:
                 //     break
                 case Consts_1.Actions.Error:
-                    console.error(`[Error][Msg: ${packet.GetMsg()}]`);
+                    console.error(`[Command] [Error] [Msg: ${packet.GetMsg()}]`);
                     break;
             }
         });
@@ -125,15 +125,19 @@ class Command {
             this.commandToken = "";
         };
     }
-    Initilize() {
+    Initilize(relay) {
+        if (relay.ip == undefined || relay.port == undefined)
+            return console.error("No valid command returned from HttpServices", { relay });
         if (typeof window === 'undefined') {
-            Logger_1.Log("[Command]", `[Node] [Connecting] [${Consts_1.Url.Command.Endpoint}]`);
-            __1.GSLive.CommandConnection = new ws_1.default(Consts_1.Url.Command.Endpoint);
+            Logger_1.Log("[Command]", `[Node] [Connecting] [${relay.ip}:${relay.port}]`);
+            __1.GSLive.CommandConnection = new ws_1.default(`ws://${relay.ip}:${relay.port}`);
         }
         else {
-            Logger_1.Log("[Command]", `[Browser] [Connecting] [${Consts_1.Url.Command.Endpoint}]`);
-            __1.GSLive.CommandConnection = new WebSocket(Consts_1.Url.Command.Endpoint);
+            Logger_1.Log("[Command]", `[Browser] [Connecting] [${relay.port}:${relay.port}]`);
+            __1.GSLive.CommandConnection = new WebSocket(`ws://${relay.ip}:${relay.port}`);
         }
+        this.superThis.GSLive.Cipher = relay.cipher;
+        this.superThis.GSLive.isEncriptionActive = relay.encription != "deactive";
         __1.GSLive.CommandConnection.onopen = this.OnConnect;
         __1.GSLive.CommandConnection.onmessage = this.OnReceive;
         __1.GSLive.CommandConnection.onclose = this.onDisconnect;

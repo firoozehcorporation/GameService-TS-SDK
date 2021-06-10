@@ -3,20 +3,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameResult = exports.VoteDetail = exports.JoinDetail = exports.PropertyChange = exports.Room = exports.Packet = void 0;
 const _1 = require(".");
 const models_1 = require("../../TurnBased/models");
+const models_2 = require("../Command/models");
 class Packet {
     constructor(superThis) {
         this.superThis = superThis;
-        this.Send = () => {
-            let serilized = this.ToString();
+        this.Send = (encription = true) => {
+            let serilized = this.ToString(encription);
             _1.TurnBased.Connection.send(serilized);
         };
     }
-    Parse(input) {
+    Parse(input, encription = true) {
         let inputJ = JSON.parse(input);
+        let data = inputJ["2"];
+        let msg = inputJ["3"];
+        if (this.superThis.GSLive.isEncriptionActive && encription) {
+            if (inputJ["2"])
+                data = Buffer.from(models_2.Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8");
+            if (inputJ["3"])
+                msg = Buffer.from(models_2.Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8");
+        }
         this.SetToken(inputJ["0"]);
         this.SetHead(inputJ["1"]);
-        this.SetData(inputJ["2"]);
-        this.SetMsg(inputJ["3"]);
+        this.SetData(data);
+        this.SetMsg(msg);
     }
     GetToken() {
         return this.Token;
@@ -42,7 +51,19 @@ class Packet {
     SetMsg(Msg) {
         this.Msg = Msg;
     }
-    Cast() {
+    Cast(encription = true) {
+        if (this.superThis.GSLive.isEncriptionActive && encription) {
+            if (this.Data) {
+                let rc4 = models_2.Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Data).toString("utf-8"));
+                let data = Buffer.from(rc4, "latin1").toString('base64');
+                this.Data = data;
+            }
+            if (this.Msg) {
+                let rc4 = models_2.Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Msg).toString("utf-8"));
+                let msg = Buffer.from(rc4, "latin1").toString('base64');
+                this.Msg = msg;
+            }
+        }
         return {
             "0": this.Token,
             "1": this.Head,
@@ -50,8 +71,8 @@ class Packet {
             "3": this.Msg
         };
     }
-    ToString() {
-        return JSON.stringify(this.Cast());
+    ToString(encription = true) {
+        return JSON.stringify(this.Cast(encription));
     }
 }
 exports.Packet = Packet;
@@ -223,7 +244,7 @@ class JoinDetail {
         let room = new Room();
         room.Parse(inputJ["2"]);
         this.JoinType = inputJ["1"];
-        this.Member = inputJ["3"];
+        this.UserJoined = inputJ["3"];
         this.Room = room;
         this.JoinOrder = inputJ["4"];
     }
@@ -231,7 +252,7 @@ class JoinDetail {
         var _a;
         return {
             JoinType: this.JoinType,
-            Member: this.Member,
+            UserJoined: this.UserJoined,
             Room: (_a = this.Room) === null || _a === void 0 ? void 0 : _a.Export(),
             JoinOrder: this.JoinOrder
         };
