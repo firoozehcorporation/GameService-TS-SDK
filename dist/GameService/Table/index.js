@@ -15,12 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Table = void 0;
 const axios_1 = __importDefault(require("axios"));
 const Consts_1 = require("../../Utils/Consts");
-const Logger_1 = require("../../Utils/Logger");
 class Table {
     constructor(superThis) {
         this.superThis = superThis;
     }
-    GetTableItems(tableId, isGlobal = false, options = { skip: 0, limit: 25, find: undefined, rowsOwner: undefined, sort: undefined }) {
+    GetTableItems(tableId, options = { skip: 0, limit: 25, find: undefined, rowsOwner: undefined, sort: undefined }) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Table}${tableId}?skip=${options.skip}&limit=${options.limit}`;
@@ -35,7 +34,7 @@ class Table {
                         "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
-                Logger_1.Log("GetTableItems", data);
+                // Log("GetTableItems", data);
                 return data;
             }
             catch (e) {
@@ -49,7 +48,7 @@ class Table {
     }
     Aggrigation(aggrigation) {
     }
-    GetTableItem(tableId, itemId, isGlobal = false) {
+    GetTableItem(tableId, itemId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Table}${tableId}/${itemId}`;
@@ -58,7 +57,7 @@ class Table {
                         "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
-                Logger_1.Log("GetTableItem", data);
+                // Log("GetTableItem", data);
                 return data.data;
             }
             catch (e) {
@@ -79,7 +78,7 @@ class Table {
                         "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
-                Logger_1.Log("AddItemToTable", data);
+                // Log("AddItemToTable", data);
                 return data.data;
             }
             catch (e) {
@@ -100,7 +99,7 @@ class Table {
                         "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
-                Logger_1.Log("UpdateTableItem", data);
+                // Log("UpdateTableItem", data);
                 return data.data;
             }
             catch (e) {
@@ -121,7 +120,7 @@ class Table {
                         "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
-                Logger_1.Log("DeleteTableItem", data);
+                // Log("DeleteTableItem", data);
                 return data.status;
             }
             catch (e) {
@@ -142,7 +141,7 @@ class Table {
                         "x-access-token": this.superThis.Authentication.gameToken
                     }
                 });
-                Logger_1.Log("DeleteTableItems", data);
+                // Log("DeleteTableItems", data);
                 return data.status;
             }
             catch (e) {

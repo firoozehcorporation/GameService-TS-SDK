@@ -7,7 +7,7 @@ import { Log } from '../../Utils/Logger';
 export class Table {
     constructor(public superThis: GameService) { }
 
-    async GetTableItems(tableId: String, isGlobal: Boolean = false, options: GetTableItemsOptions = { skip: 0, limit: 25, find: undefined, rowsOwner: undefined, sort: undefined }): Promise<object[]> {
+    async GetTableItems(tableId: String, options: GetTableItemsOptions = { skip: 0, limit: 25, find: undefined, rowsOwner: undefined, sort: undefined }): Promise<object[]> {
         try {
             let url = `${Url.Api.Endpoint}${Url.Api.Table}${tableId}?skip=${options.skip}&limit=${options.limit}`
             if (options.rowsOwner && options.rowsOwner != "")
@@ -22,7 +22,7 @@ export class Table {
                 }
             })
 
-            Log("GetTableItems", data);
+            // Log("GetTableItems", data);
 
             return data;
         } catch (e) {
@@ -37,7 +37,7 @@ export class Table {
 
     }
 
-    async GetTableItem(tableId: string, itemId: number, isGlobal: boolean = false): Promise<object> {
+    async GetTableItem(tableId: string, itemId: number): Promise<object> {
         try {
             let url = `${Url.Api.Endpoint}${Url.Api.Table}${tableId}/${itemId}`
             let { data } = await axios.get(url, {
@@ -46,7 +46,7 @@ export class Table {
                 }
             })
 
-            Log("GetTableItem", data);
+            // Log("GetTableItem", data);
 
             return data.data;
         } catch (e) {
@@ -66,7 +66,7 @@ export class Table {
                 }
             })
 
-            Log("AddItemToTable", data);
+            // Log("AddItemToTable", data);
 
             return data.data;
         } catch (e) {
@@ -86,7 +86,7 @@ export class Table {
                 }
             })
 
-            Log("UpdateTableItem", data);
+            // Log("UpdateTableItem", data);
 
             return data.data;
         } catch (e) {
@@ -106,7 +106,7 @@ export class Table {
                 }
             })
 
-            Log("DeleteTableItem", data);
+            // Log("DeleteTableItem", data);
 
             return data.status;
         } catch (e) {
@@ -126,7 +126,7 @@ export class Table {
                 }
             })
 
-            Log("DeleteTableItems", data);
+            // Log("DeleteTableItems", data);
 
             return data.status;
         } catch (e) {

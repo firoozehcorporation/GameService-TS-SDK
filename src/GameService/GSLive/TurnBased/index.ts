@@ -323,8 +323,9 @@ export class TurnBased {
     public OnJoinedRoom: (join: any) => void = () => { };
     public OnAutoMatchUpdated: (e: any) => void = () => { };
     public OnAutoMatchCanceled: (e: string) => void = () => { };
-    public OnAvailableRoomsReceived: (sender: object, e: object[]) => void = () => { };
-    public OnFindMemberReceived: (sender: object, e: object[]) => void = () => { };
+    public OnAvailableRoomsReceived: (e: object[]) => void = () => { };
+    public OnFindMemberReceived: (e: object[]) => void = () => { };
+    public NewInviteReceived: (e: any) => void = () => { }
     public OnInvitationSent: (e: object) => void = () => { };
     public OnInviteInboxReceived: (invites: object[]) => void = () => { };
     public OnCurrentRoomInfoReceived: (roomData: any) => void = () => { };
