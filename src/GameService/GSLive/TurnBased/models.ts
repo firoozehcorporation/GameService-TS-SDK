@@ -82,4 +82,9 @@ export class Outcome {
     public set Rank(value: number | undefined) {
         this._Rank = value;
     }
+
+    Parse(inputJ: any) {
+        this.Rank = inputJ[0]
+        this.Value = inputJ[1]
+    }
 }

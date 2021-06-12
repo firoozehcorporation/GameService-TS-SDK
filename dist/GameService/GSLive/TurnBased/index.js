@@ -24,6 +24,7 @@ class TurnBased {
         this.OnAutoMatchCanceled = () => { };
         this.OnAvailableRoomsReceived = () => { };
         this.OnFindMemberReceived = () => { };
+        this.NewInviteReceived = () => { };
         this.OnInvitationSent = () => { };
         this.OnInviteInboxReceived = () => { };
         this.OnCurrentRoomInfoReceived = () => { };

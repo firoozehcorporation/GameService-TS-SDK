@@ -60,7 +60,7 @@ class Command {
                     this.superThis.GSLive.Chats.OnSubscribeChannel(packet.GetMsg());
                     break;
                 case Consts_1.Actions.Command.ActionUnSubscribe:
-                    this.superThis.GSLive.Chats.OnUnSubscribeChannel();
+                    this.superThis.GSLive.Chats.OnUnSubscribeChannel(packet.GetMsg());
                     break;
                 case Consts_1.Actions.Command.ActionGetLastGroupMessages:
                     let msgs = JSON.parse(packet.GetData());

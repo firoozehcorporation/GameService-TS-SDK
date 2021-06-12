@@ -71,6 +71,10 @@ class Outcome {
     set Rank(value) {
         this._Rank = value;
     }
+    Parse(inputJ) {
+        this.Rank = inputJ[0];
+        this.Value = inputJ[1];
+    }
 }
 exports.Outcome = Outcome;
 //# sourceMappingURL=models.js.map

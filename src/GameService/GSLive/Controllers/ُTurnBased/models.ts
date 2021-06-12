@@ -1,7 +1,7 @@
 import { TurnBased } from ".";
 import { GameService } from '../../../index';
 import { Member } from "../../../Player/models";
-import { PropertyType } from "../../TurnBased/models";
+import { Outcome, PropertyType } from "../../TurnBased/models";
 import { Rc4 } from "../Command/models";
 
 export class Packet {
@@ -79,7 +79,7 @@ export class Packet {
         return JSON.stringify(this.Cast(encription))
     }
     Send = (encription: boolean = true) => {
-        let serilized = this.ToString(encription)
+        let serilized = this.ToString(encription);
         TurnBased.Connection!.send(serilized);
     }
 }
@@ -294,20 +294,33 @@ export class JoinDetail {
 
 export class VoteDetail {
     Member: object | undefined
-    Outcomes: object | undefined
+    Outcome: { [memberID: string]: Outcome | undefined } | undefined
 
     Parse(inputJ: any) {
         this.Member = inputJ["0"]
-        this.Outcomes = inputJ["1"]
+
+        let outcomes: any = {};
+        for (let memberOutcome in inputJ["1"]) {
+            let outcome = new Outcome();
+            outcome.Parse(inputJ["1"][memberOutcome]);
+            outcomes[memberOutcome] = outcome
+        }
+        this.Outcome = outcomes
     }
 }
 
 export class GameResult {
     AcceptCount: number | undefined
-    Outcome: object | undefined
+    Outcome: Outcome | undefined
 
     Parse(inputJ: any) {
-        this.AcceptCount = inputJ["0"]
-        this.Outcome = inputJ["1"]
+        this.AcceptCount = inputJ["Accept"]
+        let outcomes: any = {};
+        for (let memberOutcome in inputJ["Outcomes"]) {
+            let outcome = new Outcome();
+            outcome.Parse(inputJ["Outcomes"][memberOutcome]);
+            outcomes[memberOutcome] = outcome
+        }
+        this.Outcome = outcomes
     }
 }

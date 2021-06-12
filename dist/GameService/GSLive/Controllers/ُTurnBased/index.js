@@ -61,10 +61,12 @@ class TurnBased {
                     let voteDetail = JSON.parse(packet.GetData());
                     let vote = new models_2.VoteDetail();
                     vote.Parse(voteDetail);
-                    this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member, vote.Outcomes);
+                    this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member, vote.Outcome);
                     break;
                 case Consts_1.Actions.TurnBased.ActionAcceptVote:
-                    let result = JSON.parse(packet.GetData());
+                    let resultdata = JSON.parse(packet.GetData());
+                    let result = new models_2.GameResult();
+                    result.Parse(resultdata);
                     this.superThis.GSLive.TurnBased.OnComplete(result);
                     break;
                 case Consts_1.Actions.TurnBased.ActionGetUsers:
@@ -106,10 +108,10 @@ class TurnBased {
     Initilize(RoomID, Endpoint, Port) {
         this.RoomID = RoomID;
         if (Endpoint == undefined || Port == undefined)
-            return console.error("No valid area returned from Command", RoomID, Endpoint, Port);
+            throw `No valid area returned from Command, ${RoomID}, ${Endpoint}, ${Port}`;
         if (typeof window === 'undefined') {
             Logger_1.Log("[TurnBased]", `[Node] [Connecting] [ws://${Endpoint}:${Port}]`);
-            TurnBased.Connection = new ws_1.default(`ws://${Endpoint}:${Port}`);
+            TurnBased.Connection = new ws_1.default(`ws://${Endpoint}:${Port}`, { maxPayload: 1024 * 2 });
         }
         else {
             Logger_1.Log("[TurnBased]", `[Browser] [Connecting] [ws://${Endpoint}:${Port}]`);

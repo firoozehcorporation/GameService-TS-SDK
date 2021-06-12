@@ -1,7 +1,7 @@
 import { Actions } from '../../../../Utils/Consts';
 import { GameService } from '../../../index';
 import { Payload } from '../Command/models';
-import { JoinDetail, Packet, PropertyChange, Room, VoteDetail } from './models';
+import { GameResult, JoinDetail, Packet, PropertyChange, Room, VoteDetail } from './models';
 import nWebSocket from 'ws';
 import { Log } from '../../../../Utils/Logger';
 import { JoinPayload } from '../RealTime/models';
@@ -16,15 +16,16 @@ export class TurnBased {
     public Initilize(RoomID: string, Endpoint: string, Port: number) {
         this.RoomID = RoomID;
         if (Endpoint == undefined || Port == undefined)
-            return console.error("No valid area returned from Command", RoomID, Endpoint, Port);
+            throw `No valid area returned from Command, ${RoomID}, ${Endpoint}, ${Port}`
 
         if (typeof window === 'undefined') {
             Log("[TurnBased]", `[Node] [Connecting] [ws://${Endpoint}:${Port}]`);
-            TurnBased.Connection = new nWebSocket(`ws://${Endpoint}:${Port}`);
+            TurnBased.Connection = new nWebSocket(`ws://${Endpoint}:${Port}`, { maxPayload: 1024 * 2 });
         } else {
             Log("[TurnBased]", `[Browser] [Connecting] [ws://${Endpoint}:${Port}]`);
             TurnBased.Connection = new WebSocket(`ws://${Endpoint}:${Port}`);
         }
+
         TurnBased.Connection!.onopen = this.OnConnect
         TurnBased.Connection!.onmessage = this.OnReceive;
         TurnBased.Connection!.onclose = this.onDisconnect;
@@ -83,10 +84,12 @@ export class TurnBased {
                 let voteDetail = JSON.parse(packet.GetData()!);
                 let vote = new VoteDetail();
                 vote.Parse(voteDetail);
-                this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member!, vote.Outcomes!)
+                this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member!, vote.Outcome!)
                 break
             case Actions.TurnBased.ActionAcceptVote:
-                let result = JSON.parse(packet.GetData()!);
+                let resultdata = JSON.parse(packet.GetData()!);
+                let result = new GameResult();
+                result.Parse(resultdata)
                 this.superThis.GSLive.TurnBased.OnComplete(result)
                 break
             case Actions.TurnBased.ActionGetUsers:

@@ -262,14 +262,26 @@ exports.JoinDetail = JoinDetail;
 class VoteDetail {
     Parse(inputJ) {
         this.Member = inputJ["0"];
-        this.Outcomes = inputJ["1"];
+        let outcomes = {};
+        for (let memberOutcome in inputJ["1"]) {
+            let outcome = new models_1.Outcome();
+            outcome.Parse(inputJ["1"][memberOutcome]);
+            outcomes[memberOutcome] = outcome;
+        }
+        this.Outcome = outcomes;
     }
 }
 exports.VoteDetail = VoteDetail;
 class GameResult {
     Parse(inputJ) {
-        this.AcceptCount = inputJ["0"];
-        this.Outcome = inputJ["1"];
+        this.AcceptCount = inputJ["Accept"];
+        let outcomes = {};
+        for (let memberOutcome in inputJ["Outcomes"]) {
+            let outcome = new models_1.Outcome();
+            outcome.Parse(inputJ["Outcomes"][memberOutcome]);
+            outcomes[memberOutcome] = outcome;
+        }
+        this.Outcome = outcomes;
     }
 }
 exports.GameResult = GameResult;
