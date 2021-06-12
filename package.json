@@ -1,18 +1,15 @@
 {
   "name": "gameservice-sdk",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "JavaScript SDK version of GamesService.ir",
   "homepage": "https://gamesservice.ir",
-  "main": "dist/bundle.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "webpack": "webpack",
-    "user1": "ts-node ./test/user1.test.ts",
-    "user2": "ts-node ./test/user2.test.ts",
-    "serialize": "ts-node ./test/serialize.test.ts",
-    "eventSerialize": "ts-node test/eventSerialize.test.ts"
+    "webpack": "webpack"
   },
+  "prepublish": "tsc",
   "author": "Amir Rastegar (FiroozehCorp LTD)",
   "license": "ISC",
   "devDependencies": {
