@@ -6,14 +6,14 @@ import { Log } from '../../../Utils/Logger';
 import axios from 'axios';
 
 export class Friends {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     async FindMembers(query: string, skip: number = 0, limit: number = 25): Promise<[number, Member[]]> {
         try {
             let url = `${Url.Api.Endpoint}${Url.Api.Friends}?q=${query}&skip=${skip}&limit=${limit}`
             let { data } = await axios.get(url, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -32,7 +32,7 @@ export class Friends {
             let url = `${Url.Api.Endpoint}${Url.Api.Friends}/me?skip=${skip}&limit=${limit}`
             let { data } = await axios.get(url, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -51,7 +51,7 @@ export class Friends {
             let url = `${Url.Api.Endpoint}${Url.Api.Friends}/me/pending?skip=${skip}&limit=${limit}`
             let { data } = await axios.get(url, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -70,7 +70,7 @@ export class Friends {
             let url = `${Url.Api.Endpoint}${Url.Api.Friends}/${memberId}`
             let { data } = await axios.post(url, undefined, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -89,7 +89,7 @@ export class Friends {
             let url = `${Url.Api.Endpoint}${Url.Api.Friends}/${memberId}`
             let { data } = await axios.put(url, undefined, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -108,7 +108,7 @@ export class Friends {
             let url = `${Url.Api.Endpoint}${Url.Api.Friends}/${memberId}`
             let { data } = await axios.put(url, undefined, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 

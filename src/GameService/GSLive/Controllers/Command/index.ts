@@ -7,7 +7,7 @@ import { Log } from '../../../../Utils/Logger';
 import { GSLive } from '../..';
 
 export class Command {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     commandToken: string = "";
     isInAutoMatchQueue = false;
@@ -23,8 +23,8 @@ export class Command {
             GSLive.CommandConnection = new WebSocket(`ws://${relay.ip}:${relay.port}`);
         }
         
-        this.superThis.GSLive.Cipher = relay.cipher;
-        this.superThis.GSLive.isEncriptionActive = relay.encription != "deactive";
+        GameService.GSLive.Cipher = relay.cipher;
+        GameService.GSLive.isEncriptionActive = relay.encription != "deactive";
 
         GSLive.CommandConnection!.onopen = this.OnConnect
         GSLive.CommandConnection!.onmessage = this.OnReceive;
@@ -38,58 +38,58 @@ export class Command {
     protected OnConnect = (e: nWebSocket.OpenEvent) => {
         // console.log("[Command] [Connected]")
         // Send Auth pkt
-        let payload = new Payload(this.superThis);
-        payload.SetGameID(this.superThis.Authentication.gameID);
-        payload.SetToken(this.superThis.Authentication.userToken);
+        let payload = new Payload();
+        payload.SetGameID(GameService.Authentication.gameID);
+        payload.SetToken(GameService.Authentication.userToken);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionAuth);
         pkt.SetData(payload.ToString())
         pkt.Send(false);
     }
 
     protected OnReceive = async (event: nWebSocket.MessageEvent) => {
-        let packet = new Packet(this.superThis)
-        packet.Parse(event.data, this.superThis.GSLive.Cipher != "" && this.commandToken != "");
+        let packet = new Packet()
+        packet.Parse(event.data, GameService.GSLive.Cipher != "" && this.commandToken != "");
         // console.log(packet.Export())
 
         switch (packet.GetHead()) {
             case Actions.Command.ActionAuth:
                 this.commandToken = packet.GetToken()!;
-                this.superThis.onReady()
+                GameService.onReady()
                 break
             // ---- Chats ---- //
             case Actions.Command.ActionChat:
-                let msgPublic = new Message(this.superThis);
+                let msgPublic = new Message();
                 msgPublic.Parse(packet.GetData()!)
-                this.superThis.GSLive.Chats.OnChatReceived(msgPublic.GetChannel()!, msgPublic.GetFrom()!, msgPublic.GetText()!, false)
+                GameService.GSLive.Chats.OnChatReceived(msgPublic.GetChannel()!, msgPublic.GetFrom()!, msgPublic.GetText()!, false)
                 break
             case Actions.Command.ActionPrivateChat:
-                let msgPrivate = new Message(this.superThis);
+                let msgPrivate = new Message();
                 msgPrivate.Parse(packet.GetData()!)
-                this.superThis.GSLive.Chats.OnChatReceived(msgPrivate.GetChannel()!, msgPrivate.GetFrom()!, msgPrivate.GetText()!, true)
+                GameService.GSLive.Chats.OnChatReceived(msgPrivate.GetChannel()!, msgPrivate.GetFrom()!, msgPrivate.GetText()!, true)
                 break
             case Actions.Command.ActionSubscribe:
-                this.superThis.GSLive.Chats.OnSubscribeChannel(packet.GetMsg()!)
+                GameService.GSLive.Chats.OnSubscribeChannel(packet.GetMsg()!)
                 break
             case Actions.Command.ActionUnSubscribe:
-                this.superThis.GSLive.Chats.OnUnSubscribeChannel(packet.GetMsg()!)
+                GameService.GSLive.Chats.OnUnSubscribeChannel(packet.GetMsg()!)
                 break
             case Actions.Command.ActionGetLastGroupMessages:
                 let msgs: object[] = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.Chats.ChannelsRecentMessages(msgs)
+                GameService.GSLive.Chats.ChannelsRecentMessages(msgs)
                 break
             case Actions.Command.ActionGetMembersOfChannel:
                 let members: object[] = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.Chats.ChannelMembers(members)
+                GameService.GSLive.Chats.ChannelMembers(members)
                 break
             case Actions.Command.ActionGetSubscribedChannels:
                 let channels: object[] = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.Chats.ChannelsSubscribed(channels)
+                GameService.GSLive.Chats.ChannelsSubscribed(channels)
                 break
             case Actions.Command.ActionGetPendingMessages:
                 let pendings: object[] = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.Chats.PendingMessages(pendings)
+                GameService.GSLive.Chats.PendingMessages(pendings)
                 break
 
             // ---- Create Room ---- //
@@ -101,13 +101,13 @@ export class Command {
                 if (packet.GetMsg()) {
                     autoMatchInfo = packet.GetMsg();
                 }
-                this.superThis.GSLive.TurnBased.OnAutoMatchUpdated(autoMatchInfo);
-                this.superThis.GSLive.RealTime.OnAutoMatchUpdated(autoMatchInfo);
+                GameService.GSLive.TurnBased.OnAutoMatchUpdated(autoMatchInfo);
+                GameService.GSLive.RealTime.OnAutoMatchUpdated(autoMatchInfo);
                 this.isInAutoMatchQueue = true;
                 break
             case Actions.Command.LeftWaitingQ:
-                this.superThis.GSLive.TurnBased.OnAutoMatchCanceled(packet.GetMsg() || "")
-                this.superThis.GSLive.RealTime.OnAutoMatchCanceled(packet.GetMsg() || "")
+                GameService.GSLive.TurnBased.OnAutoMatchCanceled(packet.GetMsg() || "")
+                GameService.GSLive.RealTime.OnAutoMatchCanceled(packet.GetMsg() || "")
                 this.isInAutoMatchQueue = false;
                 break
             case Actions.Command.ActionGetRooms:
@@ -118,9 +118,9 @@ export class Command {
                 let start = new StartGame();
                 start.parse(packet.GetData()!)
                 if (start.Room!["syncMode"] == 1)
-                    await this.superThis.GSLive.TurnbasedController.Initilize(start.Room!["_id"], start.Area!.Endpoint, start.Area!.Port)
+                    await GameService.GSLive.TurnbasedController.Initilize(start.Room!["_id"], start.Area!.Endpoint, start.Area!.Port)
                 else
-                    await this.superThis.GSLive.RealTimeController.Initilize(start.Room!["_id"], start.Area?.Hash!, start.Area!.Endpoint, start.Area!.Port)
+                    await GameService.GSLive.RealTimeController.Initilize(start.Room!["_id"], start.Area?.Hash!, start.Area!.Endpoint, start.Area!.Port)
                 this.isInAutoMatchQueue = false;
                 break
             // case Actions.Command.ActionKickUser:

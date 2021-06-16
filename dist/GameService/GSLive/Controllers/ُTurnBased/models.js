@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameResult = exports.VoteDetail = exports.JoinDetail = exports.PropertyChange = exports.Room = exports.Packet = void 0;
 const _1 = require(".");
+const index_1 = require("../../../index");
 const models_1 = require("../../TurnBased/models");
 const models_2 = require("../Command/models");
 class Packet {
-    constructor(superThis) {
-        this.superThis = superThis;
+    constructor() {
         this.Send = (encription = true) => {
             let serilized = this.ToString(encription);
             _1.TurnBased.Connection.send(serilized);
@@ -16,11 +16,11 @@ class Packet {
         let inputJ = JSON.parse(input);
         let data = inputJ["2"];
         let msg = inputJ["3"];
-        if (this.superThis.GSLive.isEncriptionActive && encription) {
+        if (index_1.GameService.GSLive.isEncriptionActive && encription) {
             if (inputJ["2"])
-                data = Buffer.from(models_2.Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8");
-            if (inputJ["3"])
-                msg = Buffer.from(models_2.Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8");
+                data = Buffer.from(models_2.Rc4(index_1.GameService.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8");
+            if (inputJ["3"] && inputJ["1"] !== 100)
+                msg = Buffer.from(models_2.Rc4(index_1.GameService.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8");
         }
         this.SetToken(inputJ["0"]);
         this.SetHead(inputJ["1"]);
@@ -52,14 +52,14 @@ class Packet {
         this.Msg = Msg;
     }
     Cast(encription = true) {
-        if (this.superThis.GSLive.isEncriptionActive && encription) {
+        if (index_1.GameService.GSLive.isEncriptionActive && encription) {
             if (this.Data) {
-                let rc4 = models_2.Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Data).toString("utf-8"));
+                let rc4 = models_2.Rc4(index_1.GameService.GSLive.Cipher, Buffer.from(this.Data).toString("utf-8"));
                 let data = Buffer.from(rc4, "latin1").toString('base64');
                 this.Data = data;
             }
             if (this.Msg) {
-                let rc4 = models_2.Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Msg).toString("utf-8"));
+                let rc4 = models_2.Rc4(index_1.GameService.GSLive.Cipher, Buffer.from(this.Msg).toString("utf-8"));
                 let msg = Buffer.from(rc4, "latin1").toString('base64');
                 this.Msg = msg;
             }

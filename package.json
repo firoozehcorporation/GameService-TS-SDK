@@ -7,7 +7,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "user1": "ts-node ./test/user1.test.ts",
+    "user2": "ts-node ./test/user2.test.ts"
   },
   "prepublish": "tsc",
   "author": "Amir Rastegar (FiroozehCorp LTD)",
@@ -23,8 +25,7 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.3.2",
     "webpack": "^5.38.1",
-    "webpack-cli": "^4.7.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-cli": "^4.7.0"
   },
   "dependencies": {
     "axios": "^0.21.1",

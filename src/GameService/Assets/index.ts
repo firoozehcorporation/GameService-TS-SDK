@@ -5,13 +5,13 @@ import axios from 'axios';
 import { GameService } from '../index';
 
 export class Assets {
-    constructor(public superThis: GameService) { }
+    constructor() { }
     
     async GetAssetInfo(tag: string): Promise<AssetInfoData> {
         try {
-            let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.DownloadAssets}/${this.superThis.ClientID}/datapack/?tag=${tag}`, {
+            let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.DownloadAssets}/${GameService.ClientID}/datapack/?tag=${tag}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 

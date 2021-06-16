@@ -2,9 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Message = void 0;
 class Message {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     GetIsPrivate() {
         return this.IsPrivate;
     }

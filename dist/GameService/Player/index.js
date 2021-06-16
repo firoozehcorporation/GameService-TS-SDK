@@ -17,17 +17,16 @@ const Consts_1 = require("../../Utils/Consts");
 const models_1 = require("./models");
 const Logger_1 = require("../../Utils/Logger");
 const axios_1 = __importDefault(require("axios"));
+const __1 = require("..");
 const uuid_1 = require("uuid");
 class Player {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     GetCurrentPlayer() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetCurrentPlayer}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetCurrentPlayer", data);
@@ -47,7 +46,7 @@ class Player {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetCurrentPlayer}/${memberId}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetCurrentPlayer", data);
@@ -66,12 +65,12 @@ class Player {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.LastLoginInfo}`, {
-                    "game": this.superThis.ClientID,
-                    "secret": this.superThis.ClientSecret,
+                    "game": __1.GameService.ClientID,
+                    "secret": __1.GameService.ClientSecret,
                     "device_id": uuid_1.v4()
                 }, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetLastLoginMemberInfo", data);
@@ -93,7 +92,7 @@ class Player {
             try {
                 let { data } = yield axios_1.default.put(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetCurrentPlayer}`, input.Export(), {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 // Log("EditCurrentPlayerProfile", data);
@@ -118,7 +117,7 @@ class Player {
                     "new_password": newPassword
                 }, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("ChangePassword", data);
@@ -138,7 +137,7 @@ class Player {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Devices}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetActiveDevices", data);
@@ -159,7 +158,7 @@ class Player {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Devices}/${deviceId}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("RevokeActiveDevice", data);

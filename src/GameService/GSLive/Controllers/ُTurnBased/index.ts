@@ -7,7 +7,7 @@ import { Log } from '../../../../Utils/Logger';
 import { JoinPayload } from '../RealTime/models';
 
 export class TurnBased {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     turnbasedToken: string = "";
     RoomID: string = "";
@@ -36,11 +36,11 @@ export class TurnBased {
     }
     protected OnConnect = (e: nWebSocket.OpenEvent) => {
         // Send Auth pkt
-        let payload = new Payload(this.superThis);
+        let payload = new Payload();
         payload.SetGameID(this.RoomID);
-        payload.SetToken(this.superThis.Authentication.gameToken);
+        payload.SetToken(GameService.Authentication.gameToken);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.TurnBased.ActionAuth);
         pkt.SetData(payload.ToString())
         pkt.Send(false);
@@ -49,8 +49,8 @@ export class TurnBased {
     protected OnReceive = (event: nWebSocket.MessageEvent) => {
         // Log("[TurnBased]", `[OnReceive]: ${event.data}`);
 
-        let packet = new Packet(this.superThis)
-        packet.Parse(event.data, this.superThis.GSLive.Cipher != "");
+        let packet = new Packet()
+        packet.Parse(event.data, GameService.GSLive.Cipher != "");
 
         switch (packet.GetHead()) {
             case Actions.TurnBased.ActionAuth:
@@ -60,19 +60,19 @@ export class TurnBased {
                 let joinData = JSON.parse(packet.GetData()!);
                 let joinDetail = new JoinDetail();
                 joinDetail.Parse(joinData)
-                this.superThis.GSLive.TurnBased.OnJoinedRoom(joinDetail.Export())
+                GameService.GSLive.TurnBased.OnJoinedRoom(joinDetail.Export())
                 break
             case Actions.TurnBased.ActionTakeTurn:
                 let turnData = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.TurnBased.OnTakeTurn(turnData["1"], turnData[0])
+                GameService.GSLive.TurnBased.OnTakeTurn(turnData["1"], turnData[0])
                 break
             case Actions.TurnBased.ActionChooseNext:
                 let nextData = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.TurnBased.OnChoosedNext(nextData)
+                GameService.GSLive.TurnBased.OnChoosedNext(nextData)
                 break
             case Actions.TurnBased.ActionLeave:
                 let member = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.TurnBased.OnLeaveRoom(member)
+                GameService.GSLive.TurnBased.OnLeaveRoom(member)
                 if (member!.user!.isMe) {
                     TurnBased.Connection?.close()
                     this.turnbasedToken = ""
@@ -84,33 +84,33 @@ export class TurnBased {
                 let voteDetail = JSON.parse(packet.GetData()!);
                 let vote = new VoteDetail();
                 vote.Parse(voteDetail);
-                this.superThis.GSLive.TurnBased.OnVoteReceived(vote.Member!, vote.Outcome!)
+                GameService.GSLive.TurnBased.OnVoteReceived(vote.Member!, vote.Outcome!)
                 break
             case Actions.TurnBased.ActionAcceptVote:
                 let resultdata = JSON.parse(packet.GetData()!);
                 let result = new GameResult();
                 result.Parse(resultdata)
-                this.superThis.GSLive.TurnBased.OnComplete(result)
+                GameService.GSLive.TurnBased.OnComplete(result)
                 break
             case Actions.TurnBased.ActionGetUsers:
                 let members = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.TurnBased.OnRoomMembersDetailReceived(members)
+                GameService.GSLive.TurnBased.OnRoomMembersDetailReceived(members)
                 break
             case Actions.TurnBased.ActionCurrentTurnDetail:
                 let currentTurn = JSON.parse(packet.GetData()!);
-                this.superThis.GSLive.TurnBased.OnCurrentTurnMember(currentTurn)
+                GameService.GSLive.TurnBased.OnCurrentTurnMember(currentTurn)
                 break
             case Actions.TurnBased.ModifyValue:
                 let value = JSON.parse(packet.GetData()!);
                 let propertyChange = new PropertyChange();
                 propertyChange.Parse(value)
-                this.superThis.GSLive.TurnBased.OnPropertyUpdated(propertyChange)
+                GameService.GSLive.TurnBased.OnPropertyUpdated(propertyChange)
                 break
             case Actions.TurnBased.GetRoomInfo:
                 let roomInfoS = JSON.parse(packet.GetData()!);
                 let roomInfo = new Room();
                 roomInfo.Parse(roomInfoS);
-                this.superThis.GSLive.TurnBased.OnCurrentRoomInfoReceived(roomInfo.Export())
+                GameService.GSLive.TurnBased.OnCurrentRoomInfoReceived(roomInfo.Export())
                 break
             case Actions.Error:
                 console.error(`[Error] [Msg: ${packet.GetMsg()}]`)

@@ -1,7 +1,7 @@
 import { GameService } from '../../index';
 
 export class Data {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     Head: number | undefined
     ID: string | undefined

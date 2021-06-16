@@ -6,13 +6,13 @@ import { GameService } from '..';
 import { v4 } from 'uuid';
 
 export class Player {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     async GetCurrentPlayer(): Promise<Member> {
         try {
             let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.GetCurrentPlayer}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -30,7 +30,7 @@ export class Player {
         try {
             let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.GetCurrentPlayer}/${memberId}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -47,12 +47,12 @@ export class Player {
     async GetLastLoginMemberInfo(): Promise<MemberInfo> {
         try {
             let { data } = await axios.post(`${Url.Api.Endpoint}${Url.Api.LastLoginInfo}`, {
-                "game": this.superThis.ClientID,
-                "secret": this.superThis.ClientSecret,
+                "game": GameService.ClientID,
+                "secret": GameService.ClientSecret,
                 "device_id": v4()
             }, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -73,7 +73,7 @@ export class Player {
                 input.Export(),
                 {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": GameService.Authentication.gameToken
                     }
                 }
             )
@@ -97,7 +97,7 @@ export class Player {
                 "new_password": newPassword
             }, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -115,7 +115,7 @@ export class Player {
         try {
             let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.Devices}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -134,7 +134,7 @@ export class Player {
         try {
             let { data } = await axios.post(`${Url.Api.Endpoint}${Url.Api.Devices}/${deviceId}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 

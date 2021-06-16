@@ -1,7 +1,7 @@
 import { GameService } from '../../index';
 
 export class Message {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     private IsPrivate: boolean | undefined
     GetIsPrivate(): boolean | undefined {

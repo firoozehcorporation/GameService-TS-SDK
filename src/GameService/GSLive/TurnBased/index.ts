@@ -6,16 +6,16 @@ import { Data, Packet } from '../Controllers/Command/models';
 import { Member } from '../../Player/models';
 
 export class TurnBased {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     // Functions
     public async CreateRoom(options: CreateRoomOptions) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (this.superThis.GSLive.TurnbasedController.RoomID)
+        if (GameService.GSLive.TurnbasedController.RoomID)
             throw "User is already in game room, please left from it first.";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetMax(options.maxPlayer);
         data.SetMin(options.minPlayer);
         data.SetName(options.roomName);
@@ -26,22 +26,22 @@ export class TurnBased {
         data.SetExtra(options.extra!);
         data.SetSyncMode(1)
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionCreateRoom);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString())
         pkt.Send()
     }
 
     public async AutoMatch(options: AutoMatchOptions) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (this.superThis.GSLive.Command.isInAutoMatchQueue)
+        if (GameService.GSLive.Command.isInAutoMatchQueue)
             throw "User is in automatch queue already";
-        if (this.superThis.GSLive.TurnbasedController.RoomID)
+        if (GameService.GSLive.TurnbasedController.RoomID)
             throw "User is already in game room, please left from it first.";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetMax(options.maxPlayer);
         data.SetMin(options.minPlayer);
         data.SetRole(options.role);
@@ -49,184 +49,184 @@ export class TurnBased {
         data.SetExtra(options.extra!);
         data.SetSyncMode(1);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionAutoMatch);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString())
         pkt.Send()
     }
 
     public async CancelAutoMatch() {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (!this.superThis.GSLive.Command.isInAutoMatchQueue)
+        if (!GameService.GSLive.Command.isInAutoMatchQueue)
             throw "User is not in automatch queue";
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.LeftWaitingQ);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.Send()
     }
 
     public async GetAvailableRooms(role: string, limit: number) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetMax(limit);
         data.SetRole(role);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionGetRooms);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async JoinRoom(roomID: string, extra: string | undefined = undefined, password: string | undefined = undefined) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (this.superThis.GSLive.TurnbasedController.RoomID)
+        if (GameService.GSLive.TurnbasedController.RoomID)
             throw "User is already in game room, please left from it first.";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetID(roomID);
         data.SetExtra(extra!);
         data.SetPassword(password!);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionJoinRoom);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async FindMember(query: string, limit: number) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetUser(query);
         data.SetMax(limit);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionFindUser);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async InviteUser(roomID: string, userID: string) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetID(roomID);
         data.SetUser(userID);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionInviteUser);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async GetInviteInbox() {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetSyncMode(1);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionGetInviteList);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async AcceptInvite(inviteID: string, extra: string) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
 
-        if (this.superThis.GSLive.TurnbasedController.RoomID)
+        if (GameService.GSLive.TurnbasedController.RoomID)
             throw "User is already in game room, please left from it first.";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetInvite(inviteID);
         data.SetExtra(extra)
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionAcceptInvite);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send();
     }
 
     public async GetCurrentRoomInfo() {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.GetRoomInfo);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.Send();
     }
 
     public async GetRoomMembersDetail() {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ActionGetUsers);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.Send();
     }
 
     public async ChooseNext(whoIsNext: string | undefined = undefined) {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let data = new TurnData(this.superThis);
+        let data = new TurnData();
         if (whoIsNext)
             data.Next = whoIsNext;
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ActionChooseNext);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.SetData(data.ToString());
         pkt.Send();
     }
 
     public async TakeTurn(data: string | undefined, whoIsNext: string | undefined = undefined) {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let dataIn = new TurnData(this.superThis);
+        let dataIn = new TurnData();
         if (whoIsNext)
             dataIn.Next = whoIsNext;
         dataIn.Data = data;
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ActionTakeTurn);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.SetData(dataIn.ToString());
         pkt.Send();
     }
 
     public async GetCurrentTurnMember() {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ActionCurrentTurnDetail);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.Send();
     }
 
     public async Vote(outcomes: { [memberID: string]: Outcome }) {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let dataIn = new TurnData(this.superThis);
+        let dataIn = new TurnData();
         let outcomesS: any = {};
         Object.keys(outcomes).map(key => {
             outcomesS[key] = {
@@ -236,32 +236,32 @@ export class TurnBased {
         })
         dataIn.Outcomes = outcomesS;
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ActionVote);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.SetData(dataIn.ToString());
         pkt.Send();
     }
 
     public async AcceptVote(memberID: string) {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let dataIn = new TurnData(this.superThis);
+        let dataIn = new TurnData();
         dataIn.ID = memberID;
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ActionAcceptVote);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.SetData(dataIn.ToString());
         pkt.Send();
     }
 
     public async SetOrUpdateProperty(type: PropertyType, data: { name: string, value: string }) {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let dataIn = new TurnData(this.superThis);
+        let dataIn = new TurnData();
 
         dataIn.Head = 1;
         if (type === PropertyType.Room)
@@ -275,18 +275,18 @@ export class TurnBased {
         dataIn.ID = data.name;
         dataIn.Data = data.value;
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ModifyValue);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.SetData(dataIn.ToString());
         pkt.Send();
     }
 
     public async RemoveProperty(type: PropertyType, name: string) {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let dataIn = new TurnData(this.superThis);
+        let dataIn = new TurnData();
 
         dataIn.Head = 2;
         if (type === PropertyType.Room)
@@ -297,23 +297,23 @@ export class TurnBased {
 
         dataIn.ID = name;
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ModifyValue);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.SetData(dataIn.ToString());
         pkt.Send();
     }
 
     public async LeaveRoom(whoIsNext: string | undefined = undefined) {
-        if (this.superThis.GSLive.TurnbasedController.RoomID.length < 1)
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
 
-        let data = new TurnData(this.superThis);
+        let data = new TurnData();
         data.Next = whoIsNext;
 
-        let pkt = new TurnPacket(this.superThis);
+        let pkt = new TurnPacket();
         pkt.SetHead(Actions.TurnBased.ActionLeave);
-        pkt.SetToken(this.superThis.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
         pkt.SetData(data.ToString());
         pkt.Send();
     }

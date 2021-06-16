@@ -5,7 +5,7 @@ import { Url } from '../../Utils/Consts';
 import { Log } from '../../Utils/Logger';
 
 export class Table {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     async GetTableItems(tableId: String, options: GetTableItemsOptions = { skip: 0, limit: 25, find: undefined, rowsOwner: undefined, sort: undefined }): Promise<object[]> {
         try {
@@ -18,7 +18,7 @@ export class Table {
                 url += `&conditionProperty=${options.find[0]}&conditionValue=${options.find[1]}`
             let { data } = await axios.get(url, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -42,7 +42,7 @@ export class Table {
             let url = `${Url.Api.Endpoint}${Url.Api.Table}${tableId}/${itemId}`
             let { data } = await axios.get(url, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -62,7 +62,7 @@ export class Table {
             let url = `${Url.Api.Endpoint}${Url.Api.Table}${tableId}`
             let { data } = await axios.post(url, newItem, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -82,7 +82,7 @@ export class Table {
             let url = `${Url.Api.Endpoint}${Url.Api.Table}${tableId}/${itemId}`
             let { data } = await axios.put(url, editedItem, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -102,7 +102,7 @@ export class Table {
             let url = `${Url.Api.Endpoint}${Url.Api.Table}${tableId}/${itemId}`
             let { data } = await axios.delete(url, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -122,7 +122,7 @@ export class Table {
             let url = `${Url.Api.Endpoint}${Url.Api.Table}${tableId}`
             let { data } = await axios.delete(url, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 

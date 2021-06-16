@@ -35,11 +35,11 @@ exports.Authentication = void 0;
 const Consts_1 = require("../../Utils/Consts");
 const Logger_1 = require("../../Utils/Logger");
 const Statistics = __importStar(require("../../Utils/Statistics"));
+const index_1 = require("../index");
 const uuid_1 = require("uuid");
 const axios_1 = __importDefault(require("axios"));
 class Authentication {
-    constructor(superThis) {
-        this.superThis = superThis;
+    constructor() {
         this.userToken = "";
         this.gameToken = "";
         this.gameID = "";
@@ -80,7 +80,7 @@ class Authentication {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Login}`, {
                     "mode": "register",
                     "name": NickName,
-                    "client_id": this.superThis.ClientID,
+                    "client_id": index_1.GameService.ClientID,
                     "email": Email,
                     "password": Password,
                     "device_id": uuid_1.v4(),
@@ -108,8 +108,8 @@ class Authentication {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.SMSAuth}`, {
-                    "game": this.superThis.ClientID,
-                    "secret": this.superThis.ClientSecret,
+                    "game": index_1.GameService.ClientID,
+                    "secret": index_1.GameService.ClientSecret,
                     "phone_number": PhoneNumber,
                 });
                 Logger_1.Log("SendLoginCodeSms", data);
@@ -169,20 +169,20 @@ class Authentication {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Start}`, {
-                    "game": this.superThis.ClientID,
+                    "game": index_1.GameService.ClientID,
                     "system_info": Statistics.get(),
-                    "secret": this.superThis.ClientSecret,
+                    "secret": index_1.GameService.ClientSecret,
                     "token": this.userToken,
                     "connectionType": "wss"
                 });
                 // Log("Start", data);
                 this.gameToken = data.token;
                 this.gameID = data.game._id;
-                yield this.superThis.GSLive.Command.Initilize(data.command);
+                yield index_1.GameService.GSLive.Command.Initilize(data.command);
                 return data.token;
             }
             catch (e) {
-                // if (this.superThis.Verbose) 
+                // if (GameService.Verbose) 
                 if (e && e.response) {
                     throw e.response.data.msg;
                 }

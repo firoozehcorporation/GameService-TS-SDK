@@ -5,16 +5,16 @@ import { CreateRoomOptions, AutoMatchOptions, GProtocolSendType, EventPayload } 
 import { Data, Packet, Payload } from '../Controllers/Command/models';
 import { Packet as RtPacket, Data as RtData, StringToBuffer, Types, Operations } from '../Controllers/RealTime/models';
 export class RealTime {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     // Functions
     public async CreateRoom(options: CreateRoomOptions) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (this.superThis.GSLive.RealTimeController.RoomID)
+        if (GameService.GSLive.RealTimeController.RoomID)
             throw "User is already in game room, please left from it first.";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetMax(options.maxPlayer);
         data.SetMin(options.minPlayer);
         data.SetName(options.roomName);
@@ -25,22 +25,22 @@ export class RealTime {
         data.SetExtra(options.extra!);
         data.SetSyncMode(2);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionCreateRoom);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString())
         pkt.Send()
     }
 
     public async AutoMatch(options: AutoMatchOptions) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (this.superThis.GSLive.Command.isInAutoMatchQueue)
+        if (GameService.GSLive.Command.isInAutoMatchQueue)
             throw "User is in automatch queue already";
-        if (this.superThis.GSLive.RealTimeController.RoomID)
+        if (GameService.GSLive.RealTimeController.RoomID)
             throw "User is already in game room, please left from it first.";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetMax(options.maxPlayer);
         data.SetMin(options.minPlayer);
         data.SetRole(options.role);
@@ -48,149 +48,149 @@ export class RealTime {
         data.SetExtra(options.extra!);
         data.SetSyncMode(2);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionAutoMatch);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString())
         pkt.Send()
     }
 
     public async CancelAutoMatch() {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (!this.superThis.GSLive.Command.isInAutoMatchQueue)
+        if (!GameService.GSLive.Command.isInAutoMatchQueue)
             throw "User is not in automatch queue";
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.LeftWaitingQ);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.Send()
     }
 
     public async GetAvailableRooms(role: string, limit: number) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetMax(limit);
         data.SetRole(role);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionGetRooms);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async JoinRoom(roomID: string, extra: string | undefined = undefined, password: string | undefined = undefined) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (this.superThis.GSLive.RealTimeController.RoomID)
+        if (GameService.GSLive.RealTimeController.RoomID)
             throw "User is already in game room, please left from it first.";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetID(roomID);
         data.SetExtra(extra!);
         data.SetPassword(password!);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionJoinRoom);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async FindMember(query: string, limit: number) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetUser(query);
         data.SetMax(limit);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionFindUser);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async InviteUser(roomID: string, userID: string) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetID(roomID);
         data.SetUser(userID);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionInviteUser);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async GetInviteInbox() {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetSyncMode(2);
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionGetInviteList);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
     }
 
     public async AcceptInvite(inviteID: string, extra: string) {
-        if (this.superThis.GSLive.Command.commandToken == "")
+        if (GameService.GSLive.Command.commandToken == "")
             throw "User not connected to Command Server";
-        if (this.superThis.GSLive.RealTimeController.RoomID)
+        if (GameService.GSLive.RealTimeController.RoomID)
             throw "User is already in game room, please left from it first.";
 
-        let data = new Data(this.superThis);
+        let data = new Data();
         data.SetInvite(inviteID);
         data.SetExtra(extra)
 
-        let pkt = new Packet(this.superThis);
+        let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionAcceptInvite);
-        pkt.SetToken(this.superThis.GSLive.Command.commandToken)
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send();
     }
 
     public async GetCurrentRoomInfo() {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionRoomInfo
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Send()
     }
 
     public async GetRoomMembersDetail() {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionMembersDetail
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Send()
     }
 
     public async SendPublicMessage(data: string, sendType: GProtocolSendType) {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionPublicMessage
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Type = sendType
         packet.Payload = StringToBuffer(data);
         packet.Send()
     }
 
     public async SendPrivateMessage(recieverID: string, data: string) {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let payload = new RtData();
@@ -199,13 +199,13 @@ export class RealTime {
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionPrivateMessage
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Payload = payload.Serialize()
         packet.Send()
     }
 
     public async SetOrUpdateMemberProperty(name: string, value: string) {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let ev = new EventPayload();
@@ -221,13 +221,13 @@ export class RealTime {
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionEventMessage
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Payload = data.Serialize()
         packet.Send()
     }
 
     public async RemoveMemberProperty(propertyName: string) {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let ev = new EventPayload();
@@ -242,13 +242,13 @@ export class RealTime {
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionEventMessage
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Payload = data.Serialize()
         packet.Send()
     }
 
     public async SetOrUpdateRoomProperty(name: string, value: string) {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let ev = new EventPayload();
@@ -264,13 +264,13 @@ export class RealTime {
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionEventMessage
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Payload = data.Serialize()
         packet.Send()
     }
 
     public async RemoveRoomProperty(propertyName: string) {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let ev = new EventPayload();
@@ -285,18 +285,18 @@ export class RealTime {
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionEventMessage
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Payload = data.Serialize()
         packet.Send()
     }
 
     public async GetRoomProperties() {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionGetRoomSnapshot
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Send()
     }
 
@@ -325,12 +325,12 @@ export class RealTime {
     // }
 
     public async LeaveRoom() {
-        if (this.superThis.GSLive.RealTimeController.RoomID.length < 1)
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
             throw "User is not in any game room";
 
         let packet = new RtPacket();
         packet.Action = Actions.RealTime.ActionLeave
-        packet.Token = this.superThis.GSLive.RealTimeController.realtimeToken;
+        packet.Token = GameService.GSLive.RealTimeController.realtimeToken;
         packet.Send()
     }
 

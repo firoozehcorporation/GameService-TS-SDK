@@ -10,16 +10,16 @@ import { RealTime as RealTimeController } from './Controllers/RealTime';
 import nWebSocket from 'ws';
 
 export class GSLive {
-    constructor(public superThis: GameService) {
+    constructor() {
         // controllers
-        this.Command = new Command(superThis);
-        this.TurnbasedController = new TurnbasedController(superThis);
-        this.RealTimeController = new RealTimeController(superThis);
+        this.Command = new Command();
+        this.TurnbasedController = new TurnbasedController();
+        this.RealTimeController = new RealTimeController();
 
         // functions
-        this.TurnBased = new TurnBased(superThis);
-        this.RealTime = new RealTime(superThis);
-        this.Chats = new Chats(superThis);
+        this.TurnBased = new TurnBased();
+        this.RealTime = new RealTime();
+        this.Chats = new Chats();
     }
 
     static CommandConnection: WebSocket | nWebSocket | undefined = undefined

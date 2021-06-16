@@ -16,16 +16,15 @@ exports.Achievements = void 0;
 const Consts_1 = require("../../Utils/Consts");
 const Logger_1 = require("../../Utils/Logger");
 const axios_1 = __importDefault(require("axios"));
+const __1 = require("..");
 class Achievements {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     GetAchievements() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetAchievements}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetAchievements", data);
@@ -45,7 +44,7 @@ class Achievements {
             try {
                 let { data } = yield axios_1.default.post(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.GetAchievementsv2}/${achievementid}`, null, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("Unlock", data);

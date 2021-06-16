@@ -14,12 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Save = void 0;
 const axios_1 = __importDefault(require("axios"));
+const __1 = require("..");
 const Consts_1 = require("../../Utils/Consts");
 const Logger_1 = require("../../Utils/Logger");
 class Save {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     Set(saveName, saveData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -30,7 +29,7 @@ class Save {
                     "name": saveName
                 }, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("SetSave", data);
@@ -50,7 +49,7 @@ class Save {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.SaveGame}${saveName}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetSave", data);
@@ -70,7 +69,7 @@ class Save {
             try {
                 let { data } = yield axios_1.default.delete(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.SaveGame}${saveName}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("RemoveSave", data);

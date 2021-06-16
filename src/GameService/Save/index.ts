@@ -5,7 +5,7 @@ import { Url } from '../../Utils/Consts';
 import { Log } from '../../Utils/Logger';
 
 export class Save {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     async Set(saveName: string, saveData: string | object): Promise<SaveDetails> {
         try {
@@ -16,7 +16,7 @@ export class Save {
                 "name": saveName
             }, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -34,7 +34,7 @@ export class Save {
         try {
             let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.SaveGame}${saveName}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -52,7 +52,7 @@ export class Save {
         try {
             let { data } = await axios.delete(`${Url.Api.Endpoint}${Url.Api.SaveGame}${saveName}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 

@@ -16,16 +16,15 @@ exports.Assets = void 0;
 const Consts_1 = require("../../Utils/Consts");
 const Logger_1 = require("../../Utils/Logger");
 const axios_1 = __importDefault(require("axios"));
+const index_1 = require("../index");
 class Assets {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     GetAssetInfo(tag) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.DownloadAssets}/${this.superThis.ClientID}/datapack/?tag=${tag}`, {
+                let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.DownloadAssets}/${index_1.GameService.ClientID}/datapack/?tag=${tag}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": index_1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetAssetInfo", data);

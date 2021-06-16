@@ -10,7 +10,7 @@ export class Authentication {
     gameToken: string = "";
     gameID: string = "";
 
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     async Login(Email: string, Password: string): Promise<string> {
         try {
@@ -45,7 +45,7 @@ export class Authentication {
             let { data } = await axios.post(`${Url.Api.Endpoint}${Url.Api.Login}`, {
                 "mode": "register",
                 "name": NickName,
-                "client_id": this.superThis.ClientID,
+                "client_id": GameService.ClientID,
                 "email": Email,
                 "password": Password,
                 "device_id": v4(),
@@ -71,8 +71,8 @@ export class Authentication {
     async SendLoginCodeSms(PhoneNumber: string): Promise<boolean> {
         try {
             let { data } = await axios.post(`${Url.Api.Endpoint}${Url.Api.SMSAuth}`, {
-                "game": this.superThis.ClientID,
-                "secret": this.superThis.ClientSecret,
+                "game": GameService.ClientID,
+                "secret": GameService.ClientSecret,
                 "phone_number": PhoneNumber,
             })
 
@@ -128,9 +128,9 @@ export class Authentication {
     private async Start() {
         try {
             let { data } = await axios.post(`${Url.Api.Endpoint}${Url.Api.Start}`, {
-                "game": this.superThis.ClientID,
+                "game": GameService.ClientID,
                 "system_info": Statistics.get(),
-                "secret": this.superThis.ClientSecret,
+                "secret": GameService.ClientSecret,
                 "token": this.userToken,
                 "connectionType": "wss"
             })
@@ -140,11 +140,11 @@ export class Authentication {
             this.gameToken = data.token;
             this.gameID = data.game._id;
 
-            await this.superThis.GSLive.Command.Initilize(data.command);
+            await GameService.GSLive.Command.Initilize(data.command);
 
             return data.token;
         } catch (e) {
-            // if (this.superThis.Verbose) 
+            // if (GameService.Verbose) 
             if (e && e.response) {
                 throw e.response.data.msg
             } else

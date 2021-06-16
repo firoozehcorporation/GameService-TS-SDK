@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Area = exports.StartGame = exports.Data = exports.Payload = exports.Packet = exports.Rc4 = void 0;
 const __1 = require("../..");
+const index_1 = require("../../../index");
 function Rc4(key, str) {
     var s = [], j = 0, x, res = '';
     for (var i = 0; i < 256; i++) {
@@ -27,8 +28,7 @@ function Rc4(key, str) {
 }
 exports.Rc4 = Rc4;
 class Packet {
-    constructor(superThis) {
-        this.superThis = superThis;
+    constructor() {
         this.Send = (encription = true) => {
             let serilized = this.ToString(encription);
             if (__1.GSLive.CommandConnection === undefined)
@@ -40,11 +40,11 @@ class Packet {
         let inputJ = JSON.parse(input);
         let data = inputJ["2"];
         let msg = inputJ["3"];
-        if (this.superThis.GSLive.isEncriptionActive && encription) {
+        if (index_1.GameService.GSLive.isEncriptionActive && encription) {
             if (inputJ["2"])
-                data = Buffer.from(Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8");
-            if (inputJ["3"])
-                msg = Buffer.from(Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8");
+                data = Buffer.from(Rc4(index_1.GameService.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8");
+            if (inputJ["3"] && inputJ["1"] != 100)
+                msg = Buffer.from(Rc4(index_1.GameService.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8");
         }
         this.SetToken(inputJ["0"]);
         this.SetHead(inputJ["1"]);
@@ -84,14 +84,14 @@ class Packet {
         };
     }
     Cast(encription = true) {
-        if (this.superThis.GSLive.isEncriptionActive && encription) {
+        if (index_1.GameService.GSLive.isEncriptionActive && encription) {
             if (this.Data) {
-                let rc4 = Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Data).toString("utf-8"));
+                let rc4 = Rc4(index_1.GameService.GSLive.Cipher, Buffer.from(this.Data).toString("utf-8"));
                 let data = Buffer.from(rc4, "latin1").toString('base64');
                 this.Data = data;
             }
             if (this.Msg) {
-                let rc4 = Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Msg).toString("utf-8"));
+                let rc4 = Rc4(index_1.GameService.GSLive.Cipher, Buffer.from(this.Msg).toString("utf-8"));
                 let msg = Buffer.from(rc4, "latin1").toString('base64');
                 this.Msg = msg;
             }
@@ -109,9 +109,7 @@ class Packet {
 }
 exports.Packet = Packet;
 class Payload {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     GetGameID() {
         return this.GameID;
     }
@@ -136,9 +134,7 @@ class Payload {
 }
 exports.Payload = Payload;
 class Data {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     GetID() {
         return this.ID;
     }

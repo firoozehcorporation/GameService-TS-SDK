@@ -6,13 +6,13 @@ import { GameService } from '..';
 
 
 export class Achievements {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     async GetAchievements(): Promise<Achievement[]> {
         try {
             let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.GetAchievements}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -30,7 +30,7 @@ export class Achievements {
         try {
             let { data } = await axios.post(`${Url.Api.Endpoint}${Url.Api.GetAchievementsv2}/${achievementid}`, null, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 

@@ -13,20 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Friends = void 0;
+const __1 = require("../..");
 const Consts_1 = require("../../../Utils/Consts");
 const Logger_1 = require("../../../Utils/Logger");
 const axios_1 = __importDefault(require("axios"));
 class Friends {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     FindMembers(query, skip = 0, limit = 25) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Friends}?q=${query}&skip=${skip}&limit=${limit}`;
                 let { data } = yield axios_1.default.get(url, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("FindMembers", data);
@@ -47,7 +46,7 @@ class Friends {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Friends}/me?skip=${skip}&limit=${limit}`;
                 let { data } = yield axios_1.default.get(url, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetMyFriends", data);
@@ -68,7 +67,7 @@ class Friends {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Friends}/me/pending?skip=${skip}&limit=${limit}`;
                 let { data } = yield axios_1.default.get(url, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetFriendRequests", data);
@@ -89,7 +88,7 @@ class Friends {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Friends}/${memberId}`;
                 let { data } = yield axios_1.default.post(url, undefined, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("SendFriendRequest", data);
@@ -110,7 +109,7 @@ class Friends {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Friends}/${memberId}`;
                 let { data } = yield axios_1.default.put(url, undefined, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("AcceptFriendRequest", data);
@@ -131,7 +130,7 @@ class Friends {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Friends}/${memberId}`;
                 let { data } = yield axios_1.default.put(url, undefined, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("AcceptFriendRequest", data);

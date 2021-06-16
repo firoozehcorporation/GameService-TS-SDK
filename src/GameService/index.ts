@@ -11,49 +11,49 @@ import { Social } from "./Social/index";
 
 export class GameService {
 
-    ClientID: string = "";
-    ClientSecret: string = "";
-    Verbose: boolean = false;
+    static ClientID: string = "";
+    static ClientSecret: string = "";
+    static Verbose: boolean = false;
 
-    constructor(clientId: string, clientSecret: string, Verbose: boolean = true) {
+    public static Initilize(clientId: string, clientSecret: string, Verbose: boolean = true) {
         if (typeof clientId !== 'string' || typeof clientSecret !== 'string')
             throw new Error(Errors.Internal.InvalidInput)
 
-        this.ClientID = clientId;
-        this.ClientSecret = clientSecret;
-        this.Verbose = Verbose;
+        GameService.ClientID = clientId;
+        GameService.ClientSecret = clientSecret;
+        GameService.Verbose = Verbose;
 
-        this.Authentication = new Authentication(this)
-        this.Assets = new Assets(this)
-        this.Achievements = new Achievements(this)
-        this.Leaderboards = new Leaderboards(this)
-        this.Player = new Player(this)
-        this.Save = new Save(this)
-        this.Table = new Table(this)
-        this.GSLive = new GSLive(this)
-        this.Social = new Social(this)
+        GameService.Authentication = new Authentication()
+        GameService.Assets = new Assets()
+        GameService.Achievements = new Achievements()
+        GameService.Leaderboards = new Leaderboards()
+        GameService.Player = new Player()
+        GameService.Save = new Save()
+        GameService.Table = new Table()
+        GameService.GSLive = new GSLive()
+        GameService.Social = new Social()
     }
 
     IsAuthenticated(): boolean {
-        return this.Authentication.gameToken != ""
+        return GameService.Authentication.gameToken != ""
     }
 
 
     IsCommandAvailabe(): boolean {
-        return GSLive.CommandConnection?.readyState === WebSocket.OPEN && this.GSLive.Command.commandToken != ""
+        return GSLive.CommandConnection?.readyState === WebSocket.OPEN && GameService.GSLive.Command.commandToken != ""
     }
 
     // Functions 
-    Authentication: Authentication
-    Assets: Assets
-    Achievements: Achievements
-    Leaderboards: Leaderboards
-    Player: Player
-    Save: Save
-    Table: Table
-    GSLive: GSLive
-    Social: Social
+    static Authentication: Authentication
+    static Assets: Assets
+    static Achievements: Achievements
+    static Leaderboards: Leaderboards
+    static Player: Player
+    static Save: Save
+    static Table: Table
+    static GSLive: GSLive
+    static Social: Social
 
     // Events
-    onReady: Function = () => { }
+    static onReady: Function = () => { }
 }

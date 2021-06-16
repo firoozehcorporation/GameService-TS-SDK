@@ -27,15 +27,15 @@ export function Rc4(key: string, str: string) {
 }
 
 export class Packet {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     public Parse(input: any, encription: boolean = true) {
         let inputJ = JSON.parse(input)
         let data = inputJ["2"];
         let msg = inputJ["3"];
-        if (this.superThis.GSLive.isEncriptionActive && encription) {
-            if (inputJ["2"]) data = Buffer.from(Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8")
-            if (inputJ["3"]) msg = Buffer.from(Rc4(this.superThis.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8")
+        if (GameService.GSLive.isEncriptionActive && encription) {
+            if (inputJ["2"]) data = Buffer.from(Rc4(GameService.GSLive.Cipher, Buffer.from(inputJ["2"], 'base64').toString("latin1")), "latin1").toString("utf-8")
+            if (inputJ["3"] && inputJ["1"] != 100) msg = Buffer.from(Rc4(GameService.GSLive.Cipher, Buffer.from(inputJ["3"], 'base64').toString("latin1")), "latin1").toString("utf-8")
         }
         this.SetToken(inputJ["0"]);
         this.SetHead(inputJ["1"]);
@@ -85,14 +85,14 @@ export class Packet {
     }
 
     private Cast(encription: boolean = true) {
-        if (this.superThis.GSLive.isEncriptionActive && encription) {
+        if (GameService.GSLive.isEncriptionActive && encription) {
             if (this.Data) {
-                let rc4 = Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Data!).toString("utf-8"));
+                let rc4 = Rc4(GameService.GSLive.Cipher, Buffer.from(this.Data!).toString("utf-8"));
                 let data = Buffer.from(rc4, "latin1").toString('base64');
                 this.Data = data;
             }
             if (this.Msg) {
-                let rc4 = Rc4(this.superThis.GSLive.Cipher, Buffer.from(this.Msg!).toString("utf-8"));
+                let rc4 = Rc4(GameService.GSLive.Cipher, Buffer.from(this.Msg!).toString("utf-8"));
                 let msg = Buffer.from(rc4, "latin1").toString('base64')
                 this.Msg = msg;
             }
@@ -117,7 +117,7 @@ export class Packet {
 }
 
 export class Payload {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     private GameID: string | undefined
     GetGameID(): string | undefined {
@@ -148,7 +148,7 @@ export class Payload {
 }
 
 export class Data {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     private ID: string | undefined
     GetID(): string | undefined {

@@ -14,18 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Leaderboards = void 0;
 const axios_1 = __importDefault(require("axios"));
+const __1 = require("..");
 const Consts_1 = require("../../Utils/Consts");
 const Logger_1 = require("../../Utils/Logger");
 class Leaderboards {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     GetLeaderBoards() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Leaderboard}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetLeaderBoards", data);
@@ -48,7 +47,7 @@ class Leaderboards {
                     "value": score,
                 }, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("SubmitScore", data);
@@ -68,7 +67,7 @@ class Leaderboards {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.LeaderboardV2}${leaderboardId}?skip=${skip}&limit=${limit}`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetLeaderBoardDetails", data);
@@ -88,7 +87,7 @@ class Leaderboards {
             try {
                 let { data } = yield axios_1.default.get(`${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.LeaderboardV2}${leaderboardId}/me`, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 Logger_1.Log("GetCurrentPlayerScore", data);

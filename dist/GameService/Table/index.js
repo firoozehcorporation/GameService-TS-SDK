@@ -14,11 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Table = void 0;
 const axios_1 = __importDefault(require("axios"));
+const __1 = require("..");
 const Consts_1 = require("../../Utils/Consts");
 class Table {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     GetTableItems(tableId, options = { skip: 0, limit: 25, find: undefined, rowsOwner: undefined, sort: undefined }) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -31,7 +30,7 @@ class Table {
                     url += `&conditionProperty=${options.find[0]}&conditionValue=${options.find[1]}`;
                 let { data } = yield axios_1.default.get(url, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 // Log("GetTableItems", data);
@@ -54,7 +53,7 @@ class Table {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Table}${tableId}/${itemId}`;
                 let { data } = yield axios_1.default.get(url, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 // Log("GetTableItem", data);
@@ -75,7 +74,7 @@ class Table {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Table}${tableId}`;
                 let { data } = yield axios_1.default.post(url, newItem, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 // Log("AddItemToTable", data);
@@ -96,7 +95,7 @@ class Table {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Table}${tableId}/${itemId}`;
                 let { data } = yield axios_1.default.put(url, editedItem, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 // Log("UpdateTableItem", data);
@@ -117,7 +116,7 @@ class Table {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Table}${tableId}/${itemId}`;
                 let { data } = yield axios_1.default.delete(url, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 // Log("DeleteTableItem", data);
@@ -138,7 +137,7 @@ class Table {
                 let url = `${Consts_1.Url.Api.Endpoint}${Consts_1.Url.Api.Table}${tableId}`;
                 let { data } = yield axios_1.default.delete(url, {
                     headers: {
-                        "x-access-token": this.superThis.Authentication.gameToken
+                        "x-access-token": __1.GameService.Authentication.gameToken
                     }
                 });
                 // Log("DeleteTableItems", data);

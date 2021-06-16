@@ -8,18 +8,17 @@ const Command_1 = require("./Controllers/Command");
 const _TurnBased_1 = require("./Controllers/\u064FTurnBased");
 const RealTime_1 = require("./Controllers/RealTime");
 class GSLive {
-    constructor(superThis) {
-        this.superThis = superThis;
+    constructor() {
         this.Cipher = "";
         this.isEncriptionActive = false;
         // controllers
-        this.Command = new Command_1.Command(superThis);
-        this.TurnbasedController = new _TurnBased_1.TurnBased(superThis);
-        this.RealTimeController = new RealTime_1.RealTime(superThis);
+        this.Command = new Command_1.Command();
+        this.TurnbasedController = new _TurnBased_1.TurnBased();
+        this.RealTimeController = new RealTime_1.RealTime();
         // functions
-        this.TurnBased = new index_2.TurnBased(superThis);
-        this.RealTime = new index_3.RealTime(superThis);
-        this.Chats = new index_1.Chats(superThis);
+        this.TurnBased = new index_2.TurnBased();
+        this.RealTime = new index_3.RealTime();
+        this.Chats = new index_1.Chats();
     }
     IsCommandAvailable() {
         return true;

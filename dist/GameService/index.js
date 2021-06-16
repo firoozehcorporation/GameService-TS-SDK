@@ -15,34 +15,34 @@ const index_7 = require("./Table/index");
 const index_8 = require("./GSLive/index");
 const index_9 = require("./Social/index");
 class GameService {
-    constructor(clientId, clientSecret, Verbose = true) {
-        this.ClientID = "";
-        this.ClientSecret = "";
-        this.Verbose = false;
-        // Events
-        this.onReady = () => { };
+    static Initilize(clientId, clientSecret, Verbose = true) {
         if (typeof clientId !== 'string' || typeof clientSecret !== 'string')
             throw new Error(Errors_1.default.Internal.InvalidInput);
-        this.ClientID = clientId;
-        this.ClientSecret = clientSecret;
-        this.Verbose = Verbose;
-        this.Authentication = new index_1.Authentication(this);
-        this.Assets = new index_2.Assets(this);
-        this.Achievements = new index_4.Achievements(this);
-        this.Leaderboards = new index_3.Leaderboards(this);
-        this.Player = new index_5.Player(this);
-        this.Save = new index_6.Save(this);
-        this.Table = new index_7.Table(this);
-        this.GSLive = new index_8.GSLive(this);
-        this.Social = new index_9.Social(this);
+        GameService.ClientID = clientId;
+        GameService.ClientSecret = clientSecret;
+        GameService.Verbose = Verbose;
+        GameService.Authentication = new index_1.Authentication();
+        GameService.Assets = new index_2.Assets();
+        GameService.Achievements = new index_4.Achievements();
+        GameService.Leaderboards = new index_3.Leaderboards();
+        GameService.Player = new index_5.Player();
+        GameService.Save = new index_6.Save();
+        GameService.Table = new index_7.Table();
+        GameService.GSLive = new index_8.GSLive();
+        GameService.Social = new index_9.Social();
     }
     IsAuthenticated() {
-        return this.Authentication.gameToken != "";
+        return GameService.Authentication.gameToken != "";
     }
     IsCommandAvailabe() {
         var _a;
-        return ((_a = index_8.GSLive.CommandConnection) === null || _a === void 0 ? void 0 : _a.readyState) === WebSocket.OPEN && this.GSLive.Command.commandToken != "";
+        return ((_a = index_8.GSLive.CommandConnection) === null || _a === void 0 ? void 0 : _a.readyState) === WebSocket.OPEN && GameService.GSLive.Command.commandToken != "";
     }
 }
 exports.GameService = GameService;
+GameService.ClientID = "";
+GameService.ClientSecret = "";
+GameService.Verbose = false;
+// Events
+GameService.onReady = () => { };
 //# sourceMappingURL=index.js.map

@@ -2,9 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Outcome = exports.AutoMatchOptions = exports.CreateRoomOptions = exports.PropertyType = exports.Data = void 0;
 class Data {
-    constructor(superThis) {
-        this.superThis = superThis;
-    }
+    constructor() { }
     Cast() {
         return {
             "0": this.Head,

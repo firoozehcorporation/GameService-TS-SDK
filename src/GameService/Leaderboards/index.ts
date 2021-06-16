@@ -5,13 +5,13 @@ import { Url } from '../../Utils/Consts';
 import { Log } from '../../Utils/Logger';
 
 export class Leaderboards {
-    constructor(public superThis: GameService) { }
+    constructor() { }
 
     async GetLeaderBoards(): Promise<Leaderboard[]> {
         try {
             let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.Leaderboard}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -32,7 +32,7 @@ export class Leaderboards {
                 "value": score,
             }, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -50,7 +50,7 @@ export class Leaderboards {
         try {
             let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.LeaderboardV2}${leaderboardId}?skip=${skip}&limit=${limit}`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
@@ -68,7 +68,7 @@ export class Leaderboards {
         try {
             let { data } = await axios.get(`${Url.Api.Endpoint}${Url.Api.LeaderboardV2}${leaderboardId}/me`, {
                 headers: {
-                    "x-access-token": this.superThis.Authentication.gameToken
+                    "x-access-token": GameService.Authentication.gameToken
                 }
             })
 
