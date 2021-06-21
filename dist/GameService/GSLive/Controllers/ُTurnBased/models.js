@@ -274,11 +274,11 @@ class VoteDetail {
 exports.VoteDetail = VoteDetail;
 class GameResult {
     Parse(inputJ) {
-        this.AcceptCount = inputJ["Accept"];
+        this.AcceptCount = inputJ["1"];
         let outcomes = {};
-        for (let memberOutcome in inputJ["Outcomes"]) {
+        for (let memberOutcome in inputJ["2"]) {
             let outcome = new models_1.Outcome();
-            outcome.Parse(inputJ["Outcomes"][memberOutcome]);
+            outcome.Parse(inputJ["2"][memberOutcome]);
             outcomes[memberOutcome] = outcome;
         }
         this.Outcome = outcomes;

@@ -314,11 +314,11 @@ export class GameResult {
     Outcome: Outcome | undefined
 
     Parse(inputJ: any) {
-        this.AcceptCount = inputJ["Accept"]
+        this.AcceptCount = inputJ["1"]
         let outcomes: any = {};
-        for (let memberOutcome in inputJ["Outcomes"]) {
+        for (let memberOutcome in inputJ["2"]) {
             let outcome = new Outcome();
-            outcome.Parse(inputJ["Outcomes"][memberOutcome]);
+            outcome.Parse(inputJ["2"][memberOutcome]);
             outcomes[memberOutcome] = outcome
         }
         this.Outcome = outcomes
