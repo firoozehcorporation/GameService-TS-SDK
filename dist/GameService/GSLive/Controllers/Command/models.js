@@ -109,7 +109,10 @@ class Packet {
 }
 exports.Packet = Packet;
 class Payload {
-    constructor() { }
+    constructor() {
+        this.TurnbaseConnType = "wss";
+        this.RealtimeConnType = "wss";
+    }
     GetGameID() {
         return this.GameID;
     }
@@ -125,7 +128,9 @@ class Payload {
     Cast() {
         return {
             "0": this.GameID,
-            "1": this.Token
+            "1": this.Token,
+            "2": this.TurnbaseConnType,
+            "3": this.RealtimeConnType,
         };
     }
     ToString() {

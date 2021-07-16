@@ -90,5 +90,5 @@ export class Chats {
         pkt.SetMsg(channelName)
         pkt.Send();
     }
-    public OnUnSubscribeChannel: Function = () => { };
+    public OnUnSubscribeChannel: (channelName: string) => void = (channelName) => { };
 }

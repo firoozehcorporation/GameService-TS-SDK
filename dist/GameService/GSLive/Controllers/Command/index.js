@@ -25,7 +25,7 @@ class Command {
         this.commandToken = "";
         this.isInAutoMatchQueue = false;
         this.OnConnect = (e) => {
-            // console.log("[Command] [Connected]")
+            console.log("[Command] [Connected]");
             // Send Auth pkt
             let payload = new models_1.Payload();
             payload.SetGameID(index_1.GameService.Authentication.gameID);
@@ -110,6 +110,11 @@ class Command {
                     break;
                 // case Actions.Command.ActionKickUser:
                 //     break
+                case Consts_1.Actions.Command.ActionFindUser:
+                    let result = JSON.parse(packet.GetData());
+                    index_1.GameService.GSLive.TurnBased.OnFindMemberReceived(result);
+                    index_1.GameService.GSLive.RealTime.OnFindMemberReceived(result);
+                    break;
                 case Consts_1.Actions.Error:
                     console.error(`[Command] [Error] [Msg: ${packet.GetMsg()}]`);
                     break;

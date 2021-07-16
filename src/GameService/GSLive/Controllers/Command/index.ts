@@ -10,7 +10,7 @@ export class Command {
     constructor() { }
 
     commandToken: string = "";
-    isInAutoMatchQueue = false;
+    isInAutoMatchQueue = false; 
 
     public Initilize(relay: any) {
         if (relay.ip == undefined || relay.port == undefined)
@@ -22,7 +22,7 @@ export class Command {
             Log("[Command]", `[Browser] [Connecting] [${relay.port}:${relay.port}]`);
             GSLive.CommandConnection = new WebSocket(`ws://${relay.ip}:${relay.port}`);
         }
-        
+
         GameService.GSLive.Cipher = relay.cipher;
         GameService.GSLive.isEncriptionActive = relay.encription != "deactive";
 
@@ -36,12 +36,12 @@ export class Command {
     }
 
     protected OnConnect = (e: nWebSocket.OpenEvent) => {
-        // console.log("[Command] [Connected]")
+        console.log("[Command] [Connected]")
         // Send Auth pkt
         let payload = new Payload();
         payload.SetGameID(GameService.Authentication.gameID);
         payload.SetToken(GameService.Authentication.userToken);
-
+        
         let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionAuth);
         pkt.SetData(payload.ToString())
@@ -126,7 +126,11 @@ export class Command {
             // case Actions.Command.ActionKickUser:
 
             //     break
-
+            case Actions.Command.ActionFindUser:
+                let result = JSON.parse(packet.GetData()!);
+                GameService.GSLive.TurnBased.OnFindMemberReceived(result);
+                GameService.GSLive.RealTime.OnFindMemberReceived(result);
+                break
             case Actions.Error:
                 console.error(`[Command] [Error] [Msg: ${packet.GetMsg()}]`)
                 break

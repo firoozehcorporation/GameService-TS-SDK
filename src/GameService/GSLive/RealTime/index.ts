@@ -340,7 +340,7 @@ export class RealTime {
     public OnAutoMatchUpdated: (e: any) => void = () => { };
     public OnAutoMatchCanceled: (e: string) => void = () => { };
     public OnAvailableRoomsReceived: (sender: object, e: object[]) => void = () => { };
-    public OnFindMemberReceived: (sender: object, e: object[]) => void = () => { };
+    public OnFindMemberReceived: (e: object[]) => void = () => { };
     public OnInvitationSent: (sender: object, e: object) => void = () => { };
 
     public CurrentRoomInfoReceived: (roomData: any) => void = () => { }

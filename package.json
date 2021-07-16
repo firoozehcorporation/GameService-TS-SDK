@@ -9,7 +9,8 @@
     "build": "tsc",
     "webpack": "webpack",
     "user1": "ts-node ./test/user1.test.ts",
-    "user2": "ts-node ./test/user2.test.ts"
+    "user2": "ts-node ./test/user2.test.ts",
+    "user3": "ts-node ./test/user3.test.ts"
   },
   "prepublish": "tsc",
   "author": "Amir Rastegar (FiroozehCorp LTD)",

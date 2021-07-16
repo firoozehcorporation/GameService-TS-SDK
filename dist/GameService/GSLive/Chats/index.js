@@ -22,7 +22,7 @@ class Chats {
         this.ChannelsRecentMessages = () => { };
         this.ChannelMembers = () => { };
         this.PendingMessages = () => { };
-        this.OnUnSubscribeChannel = () => { };
+        this.OnUnSubscribeChannel = (channelName) => { };
     }
     SubscribeChannel(channelName) {
         return __awaiter(this, void 0, void 0, function* () {

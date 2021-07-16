@@ -135,10 +135,15 @@ export class Payload {
         this.Token = Token;
     }
 
+    private TurnbaseConnType: string = "wss"
+    private RealtimeConnType: string = "wss"
+
     private Cast() {
         return {
             "0": this.GameID,
-            "1": this.Token
+            "1": this.Token,
+            "2": this.TurnbaseConnType,
+            "3": this.RealtimeConnType,
         }
     }
 
