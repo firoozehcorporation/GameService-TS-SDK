@@ -1,5 +1,3 @@
-import { GameService } from '../../index';
-
 export class Message {
     constructor() { }
 
@@ -52,6 +50,21 @@ export class Message {
         this.Channel = Channel;
     }
 
+    private ID: string | undefined;
+    GetID(): string | undefined {
+        return this.ID;
+    }
+    SetID(ID: string) {
+        this.ID = ID;
+    }
+    private Property: string | undefined
+    GetProperty(): string | undefined {
+        return this.Property;
+    }
+    SetProperty(Property: string) {
+        this.Property = Property;
+    }
+
     private Cast() {
         return {
             "0": this.IsPrivate,
@@ -59,18 +72,26 @@ export class Message {
             "2": this.From,
             "3": this.Text,
             "4": this.Time,
-            "5": this.Channel
+            "5": this.Channel,
+            "6": this.ID,
+            "7": this.Property
         }
     }
 
     public Parse(input: any) {
         let inputJ = JSON.parse(input)
+        this.RawParse(inputJ)
+    }
+
+    public RawParse(inputJ:any){
         this.SetIsPrivate(inputJ["0"]);
         this.SetTo(inputJ["1"]);
         this.SetFrom(inputJ["2"]);
         this.SetText(inputJ["3"]);
         this.SetTime(inputJ["4"]);
         this.SetChannel(inputJ["5"]);
+        this.SetID(inputJ["6"]);
+        this.SetProperty(inputJ["7"]);
     }
 
     ToString(): string {

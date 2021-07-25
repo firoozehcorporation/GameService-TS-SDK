@@ -1,7 +1,7 @@
-import { GameService } from '..';
 import { Chats } from '../GSLive/Chats/index';
 import { TurnBased } from '../GSLive/TurnBased/index';
 import { RealTime } from '../GSLive/RealTime/index';
+import { Events } from '../GSLive/Events/index';
 
 import { Command } from './Controllers/Command';
 import { TurnBased as TurnbasedController } from './Controllers/ُTurnBased';
@@ -20,6 +20,7 @@ export class GSLive {
         this.TurnBased = new TurnBased();
         this.RealTime = new RealTime();
         this.Chats = new Chats();
+        this.Events = new Events();
     }
 
     static CommandConnection: WebSocket | nWebSocket | undefined = undefined
@@ -41,6 +42,7 @@ export class GSLive {
 
     // Functions
     public Chats: Chats
+    public Events: Events
     public TurnBased: TurnBased
     public RealTime: RealTime
 

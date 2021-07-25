@@ -5,12 +5,13 @@ import { Area, Packet, Payload, StartGame } from './models';
 import { Message } from '../../Chats/models';
 import { Log } from '../../../../Utils/Logger';
 import { GSLive } from '../..';
+import { Event } from '../../Events/models';
 
 export class Command {
     constructor() { }
 
     commandToken: string = "";
-    isInAutoMatchQueue = false; 
+    isInAutoMatchQueue = false;
 
     public Initilize(relay: any) {
         if (relay.ip == undefined || relay.port == undefined)
@@ -41,7 +42,7 @@ export class Command {
         let payload = new Payload();
         payload.SetGameID(GameService.Authentication.gameID);
         payload.SetToken(GameService.Authentication.userToken);
-        
+
         let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionAuth);
         pkt.SetData(payload.ToString())
@@ -62,12 +63,12 @@ export class Command {
             case Actions.Command.ActionChat:
                 let msgPublic = new Message();
                 msgPublic.Parse(packet.GetData()!)
-                GameService.GSLive.Chats.OnChatReceived(msgPublic.GetChannel()!, msgPublic.GetFrom()!, msgPublic.GetText()!, false)
+                GameService.GSLive.Chats.OnChatReceived(msgPublic)
                 break
             case Actions.Command.ActionPrivateChat:
                 let msgPrivate = new Message();
                 msgPrivate.Parse(packet.GetData()!)
-                GameService.GSLive.Chats.OnChatReceived(msgPrivate.GetChannel()!, msgPrivate.GetFrom()!, msgPrivate.GetText()!, true)
+                GameService.GSLive.Chats.OnChatReceived(msgPrivate)
                 break
             case Actions.Command.ActionSubscribe:
                 GameService.GSLive.Chats.OnSubscribeChannel(packet.GetMsg()!)
@@ -77,7 +78,13 @@ export class Command {
                 break
             case Actions.Command.ActionGetLastGroupMessages:
                 let msgs: object[] = JSON.parse(packet.GetData()!);
-                GameService.GSLive.Chats.ChannelsRecentMessages(msgs)
+                let groupMsgs = [];
+                for (let i = 0; i < msgs.length; i++) {
+                    let pMsg = new Message();
+                    pMsg.RawParse(msgs[i])
+                    groupMsgs.push(pMsg);
+                }
+                GameService.GSLive.Chats.ChannelsRecentMessages(groupMsgs)
                 break
             case Actions.Command.ActionGetMembersOfChannel:
                 let members: object[] = JSON.parse(packet.GetData()!);
@@ -87,9 +94,57 @@ export class Command {
                 let channels: object[] = JSON.parse(packet.GetData()!);
                 GameService.GSLive.Chats.ChannelsSubscribed(channels)
                 break
-            case Actions.Command.ActionGetPendingMessages:
-                let pendings: object[] = JSON.parse(packet.GetData()!);
-                GameService.GSLive.Chats.PendingMessages(pendings)
+            case Actions.Command.ActionGetPrivateMessages:
+                let msgS: object[] = JSON.parse(packet.GetData()!);
+                let res = [];
+                for (let i = 0; i < msgS.length; i++) {
+                    let pMsg = new Message();
+                    pMsg.RawParse(msgS[i])
+                    res.push(pMsg);
+                }
+                GameService.GSLive.Chats.onPrivateMessages(res)
+                break
+            case Actions.Command.ActionChatRemoved:
+                let deletedMsg = new Message();
+                deletedMsg.Parse(packet.GetData()!)
+                GameService.GSLive.Chats.OnRemoveMessage(deletedMsg)
+                break
+            case Actions.Command.ActionRemoveMessages:
+                let removeInfo2 = new Message();
+                removeInfo2.Parse(packet.GetData()!)
+                if (removeInfo2.GetIsPrivate())
+                    GameService.GSLive.Chats.onClearHistoryPrivateMessages(removeInfo2.GetText()!)
+                else
+                    GameService.GSLive.Chats.onRemoveChannelMessages(removeInfo2.GetText()!)
+                break
+            case Actions.Command.ActionRemoveAllMessages:
+                let removeInfo = new Message();
+                removeInfo.Parse(packet.GetData()!)
+                if (removeInfo.GetIsPrivate())
+                    GameService.GSLive.Chats.onRemoveAllPrivateMessages()
+                else
+                    GameService.GSLive.Chats.onRemoveAllChannelMessages()
+                break
+            case Actions.Command.ActionMemberChatsRemoved:
+                let memberDeletedInfo = new Message();
+                memberDeletedInfo.Parse(packet.GetData()!)
+                GameService.GSLive.Chats.OnRemoveMemberMessages(memberDeletedInfo.GetTo()!, memberDeletedInfo.GetText()!)
+                break
+            case Actions.Command.ActionGetAggPrivateMessages:
+                let aggMegs = JSON.parse(packet.GetData()!)
+                GameService.GSLive.Chats.onGetAggrigatedPrivateMessages(aggMegs)
+                break
+            case Actions.Command.ActionEditMessage:
+                let editedMsg = new Message();
+                editedMsg.Parse(packet.GetData()!)
+                if (editedMsg.GetIsPrivate())
+                    GameService.GSLive.Chats.OnEditPrivateMessage(editedMsg)
+                else
+                    GameService.GSLive.Chats.OnEditChannelMessage(editedMsg)
+                break
+            case Actions.Command.ActionGetContactPrivateMessages:
+                let contact: object[] = JSON.parse(packet.GetData()!);
+                GameService.GSLive.Chats.onContactPrivateMessages(contact)
                 break
 
             // ---- Create Room ---- //
@@ -117,6 +172,7 @@ export class Command {
                 // connect to relay
                 let start = new StartGame();
                 start.parse(packet.GetData()!)
+
                 if (start.Room!["syncMode"] == 1)
                     await GameService.GSLive.TurnbasedController.Initilize(start.Room!["_id"], start.Area!.Endpoint, start.Area!.Port)
                 else
@@ -130,6 +186,21 @@ export class Command {
                 let result = JSON.parse(packet.GetData()!);
                 GameService.GSLive.TurnBased.OnFindMemberReceived(result);
                 GameService.GSLive.RealTime.OnFindMemberReceived(result);
+                break
+            case Actions.Command.ActionPushEvent:
+                let event = new Event();
+                event.Parse(packet.GetData()!)
+                GameService.GSLive.Events.onPushEvent(event);
+                break
+            case Actions.Command.ActionGetUserEvents:
+                let t = JSON.parse(packet.GetData()!);
+                let events = [];
+                for (let i = 0; i < t.length; i++) {
+                    let event = new Event();
+                    event.Parse(packet.GetData()!)
+                    events.push(event)
+                }
+                GameService.GSLive.Events.onGetMemberEvents(events);
                 break
             case Actions.Error:
                 console.error(`[Command] [Error] [Msg: ${packet.GetMsg()}]`)

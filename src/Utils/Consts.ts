@@ -61,7 +61,18 @@ enum CommandActions {
     ActionGetSubscribedChannels = 17,
     ActionGetMembersOfChannel = 19,
     ActionGetLastGroupMessages = 20,
-    ActionGetPendingMessages = 21,
+    ActionGetPrivateMessages = 21,
+    
+    ActionChatRemoved = 22,
+    ActionRemoveMessages = 23,
+    ActionRemoveAllMessages = 24,
+    ActionMemberChatsRemoved = 25,
+    ActionGetAggPrivateMessages = 26,
+    ActionEditMessage = 27,
+    ActionGetContactPrivateMessages = 28,
+
+    ActionPushEvent = 29,
+    ActionGetUserEvents = 30
 }
 
 enum TurnBasedActions {
