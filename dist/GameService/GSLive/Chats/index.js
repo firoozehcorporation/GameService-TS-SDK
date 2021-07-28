@@ -21,8 +21,18 @@ class Chats {
         this.ChannelsSubscribed = () => { };
         this.ChannelsRecentMessages = () => { };
         this.ChannelMembers = () => { };
-        this.PendingMessages = () => { };
+        this.onPrivateMessages = () => { };
+        this.onContactPrivateMessages = () => { };
         this.OnUnSubscribeChannel = (channelName) => { };
+        this.OnRemoveMessage = () => { };
+        this.onClearHistoryPrivateMessages = () => { };
+        this.onRemoveChannelMessages = () => { };
+        this.onRemoveAllChannelMessages = () => { };
+        this.onRemoveAllPrivateMessages = () => { };
+        this.OnRemoveMemberMessages = () => { };
+        this.onGetAggrigatedPrivateMessages = (result) => { };
+        this.OnEditPrivateMessage = () => { };
+        this.OnEditChannelMessage = () => { };
     }
     SubscribeChannel(channelName) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -89,10 +99,18 @@ class Chats {
             pkt.Send();
         });
     }
-    GetPendingMessages() {
+    GetAndRemovePrivateMessages() {
         return __awaiter(this, void 0, void 0, function* () {
             let pkt = new models_1.Packet();
-            pkt.SetHead(Consts_1.Actions.Command.ActionGetPendingMessages);
+            pkt.SetHead(Consts_1.Actions.Command.ActionGetPrivateMessages);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.Send();
+        });
+    }
+    GetContactPrivateMessages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionGetContactPrivateMessages);
             pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
             pkt.Send();
         });
@@ -103,6 +121,128 @@ class Chats {
             pkt.SetHead(Consts_1.Actions.Command.ActionUnSubscribe);
             pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
             pkt.SetMsg(channelName);
+            pkt.Send();
+        });
+    }
+    RemoveChannelMessage(channelName, messageID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetTo(channelName);
+            payload.SetText(messageID);
+            payload.SetIsPrivate(false);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionChatRemoved);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
+            pkt.Send();
+        });
+    }
+    RemovePrivateMessage(memberID, messageID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetTo(memberID);
+            payload.SetText(messageID);
+            payload.SetIsPrivate(true);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionChatRemoved);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
+            pkt.Send();
+        });
+    }
+    ClearHistoryPrivateMessages(memberID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetText(memberID);
+            payload.SetIsPrivate(true);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionRemoveMessages);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
+            pkt.Send();
+        });
+    }
+    RemoveChannelMessages(channelName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetText(channelName);
+            payload.SetIsPrivate(false);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionRemoveMessages);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
+            pkt.Send();
+        });
+    }
+    RemoveAllChannelMessages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetIsPrivate(false);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionRemoveAllMessages);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
+            pkt.Send();
+        });
+    }
+    RemoveAllPrivateMessages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetIsPrivate(true);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionRemoveAllMessages);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
+            pkt.Send();
+        });
+    }
+    RemoveMemberMessages(channelName, memberID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetTo(channelName);
+            payload.SetText(memberID);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionMemberChatsRemoved);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
+            pkt.Send();
+        });
+    }
+    GetAggrigatedPrivateMessages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionGetAggPrivateMessages);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.Send();
+        });
+    }
+    EditPrivateMessage(memberID, messageID, Text, Property) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetTo(memberID);
+            payload.SetID(messageID);
+            payload.SetText(Text);
+            payload.SetProperty(Property);
+            payload.SetIsPrivate(true);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionEditMessage);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
+            pkt.Send();
+        });
+    }
+    EditChannelMessage(channelName, messageID, Text, Property) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let payload = new models_2.Message();
+            payload.SetTo(channelName);
+            payload.SetID(messageID);
+            payload.SetText(Text);
+            payload.SetProperty(Property);
+            payload.SetIsPrivate(false);
+            let pkt = new models_1.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionEditMessage);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(payload.ToString());
             pkt.Send();
         });
     }

@@ -62,7 +62,16 @@ var CommandActions;
     CommandActions[CommandActions["ActionGetSubscribedChannels"] = 17] = "ActionGetSubscribedChannels";
     CommandActions[CommandActions["ActionGetMembersOfChannel"] = 19] = "ActionGetMembersOfChannel";
     CommandActions[CommandActions["ActionGetLastGroupMessages"] = 20] = "ActionGetLastGroupMessages";
-    CommandActions[CommandActions["ActionGetPendingMessages"] = 21] = "ActionGetPendingMessages";
+    CommandActions[CommandActions["ActionGetPrivateMessages"] = 21] = "ActionGetPrivateMessages";
+    CommandActions[CommandActions["ActionChatRemoved"] = 22] = "ActionChatRemoved";
+    CommandActions[CommandActions["ActionRemoveMessages"] = 23] = "ActionRemoveMessages";
+    CommandActions[CommandActions["ActionRemoveAllMessages"] = 24] = "ActionRemoveAllMessages";
+    CommandActions[CommandActions["ActionMemberChatsRemoved"] = 25] = "ActionMemberChatsRemoved";
+    CommandActions[CommandActions["ActionGetAggPrivateMessages"] = 26] = "ActionGetAggPrivateMessages";
+    CommandActions[CommandActions["ActionEditMessage"] = 27] = "ActionEditMessage";
+    CommandActions[CommandActions["ActionGetContactPrivateMessages"] = 28] = "ActionGetContactPrivateMessages";
+    CommandActions[CommandActions["ActionPushEvent"] = 29] = "ActionPushEvent";
+    CommandActions[CommandActions["ActionGetUserEvents"] = 30] = "ActionGetUserEvents";
 })(CommandActions || (CommandActions = {}));
 var TurnBasedActions;
 (function (TurnBasedActions) {

@@ -39,6 +39,18 @@ class Message {
     SetChannel(Channel) {
         this.Channel = Channel;
     }
+    GetID() {
+        return this.ID;
+    }
+    SetID(ID) {
+        this.ID = ID;
+    }
+    GetProperty() {
+        return this.Property;
+    }
+    SetProperty(Property) {
+        this.Property = Property;
+    }
     Cast() {
         return {
             "0": this.IsPrivate,
@@ -46,17 +58,24 @@ class Message {
             "2": this.From,
             "3": this.Text,
             "4": this.Time,
-            "5": this.Channel
+            "5": this.Channel,
+            "6": this.ID,
+            "7": this.Property
         };
     }
     Parse(input) {
         let inputJ = JSON.parse(input);
+        this.RawParse(inputJ);
+    }
+    RawParse(inputJ) {
         this.SetIsPrivate(inputJ["0"]);
         this.SetTo(inputJ["1"]);
         this.SetFrom(inputJ["2"]);
         this.SetText(inputJ["3"]);
         this.SetTime(inputJ["4"]);
         this.SetChannel(inputJ["5"]);
+        this.SetID(inputJ["6"]);
+        this.SetProperty(inputJ["7"]);
     }
     ToString() {
         return JSON.stringify(this.Cast());

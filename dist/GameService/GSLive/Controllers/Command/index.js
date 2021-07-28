@@ -20,6 +20,7 @@ const models_1 = require("./models");
 const models_2 = require("../../Chats/models");
 const Logger_1 = require("../../../../Utils/Logger");
 const __1 = require("../..");
+const models_3 = require("../../Events/models");
 class Command {
     constructor() {
         this.commandToken = "";
@@ -49,12 +50,12 @@ class Command {
                 case Consts_1.Actions.Command.ActionChat:
                     let msgPublic = new models_2.Message();
                     msgPublic.Parse(packet.GetData());
-                    index_1.GameService.GSLive.Chats.OnChatReceived(msgPublic.GetChannel(), msgPublic.GetFrom(), msgPublic.GetText(), false);
+                    index_1.GameService.GSLive.Chats.OnChatReceived(msgPublic);
                     break;
                 case Consts_1.Actions.Command.ActionPrivateChat:
                     let msgPrivate = new models_2.Message();
                     msgPrivate.Parse(packet.GetData());
-                    index_1.GameService.GSLive.Chats.OnChatReceived(msgPrivate.GetChannel(), msgPrivate.GetFrom(), msgPrivate.GetText(), true);
+                    index_1.GameService.GSLive.Chats.OnChatReceived(msgPrivate);
                     break;
                 case Consts_1.Actions.Command.ActionSubscribe:
                     index_1.GameService.GSLive.Chats.OnSubscribeChannel(packet.GetMsg());
@@ -64,7 +65,13 @@ class Command {
                     break;
                 case Consts_1.Actions.Command.ActionGetLastGroupMessages:
                     let msgs = JSON.parse(packet.GetData());
-                    index_1.GameService.GSLive.Chats.ChannelsRecentMessages(msgs);
+                    let groupMsgs = [];
+                    for (let i = 0; i < msgs.length; i++) {
+                        let pMsg = new models_2.Message();
+                        pMsg.RawParse(msgs[i]);
+                        groupMsgs.push(pMsg);
+                    }
+                    index_1.GameService.GSLive.Chats.ChannelsRecentMessages(groupMsgs);
                     break;
                 case Consts_1.Actions.Command.ActionGetMembersOfChannel:
                     let members = JSON.parse(packet.GetData());
@@ -74,9 +81,57 @@ class Command {
                     let channels = JSON.parse(packet.GetData());
                     index_1.GameService.GSLive.Chats.ChannelsSubscribed(channels);
                     break;
-                case Consts_1.Actions.Command.ActionGetPendingMessages:
-                    let pendings = JSON.parse(packet.GetData());
-                    index_1.GameService.GSLive.Chats.PendingMessages(pendings);
+                case Consts_1.Actions.Command.ActionGetPrivateMessages:
+                    let msgS = JSON.parse(packet.GetData());
+                    let res = [];
+                    for (let i = 0; i < msgS.length; i++) {
+                        let pMsg = new models_2.Message();
+                        pMsg.RawParse(msgS[i]);
+                        res.push(pMsg);
+                    }
+                    index_1.GameService.GSLive.Chats.onPrivateMessages(res);
+                    break;
+                case Consts_1.Actions.Command.ActionChatRemoved:
+                    let deletedMsg = new models_2.Message();
+                    deletedMsg.Parse(packet.GetData());
+                    index_1.GameService.GSLive.Chats.OnRemoveMessage(deletedMsg);
+                    break;
+                case Consts_1.Actions.Command.ActionRemoveMessages:
+                    let removeInfo2 = new models_2.Message();
+                    removeInfo2.Parse(packet.GetData());
+                    if (removeInfo2.GetIsPrivate())
+                        index_1.GameService.GSLive.Chats.onClearHistoryPrivateMessages(removeInfo2.GetText());
+                    else
+                        index_1.GameService.GSLive.Chats.onRemoveChannelMessages(removeInfo2.GetText());
+                    break;
+                case Consts_1.Actions.Command.ActionRemoveAllMessages:
+                    let removeInfo = new models_2.Message();
+                    removeInfo.Parse(packet.GetData());
+                    if (removeInfo.GetIsPrivate())
+                        index_1.GameService.GSLive.Chats.onRemoveAllPrivateMessages();
+                    else
+                        index_1.GameService.GSLive.Chats.onRemoveAllChannelMessages();
+                    break;
+                case Consts_1.Actions.Command.ActionMemberChatsRemoved:
+                    let memberDeletedInfo = new models_2.Message();
+                    memberDeletedInfo.Parse(packet.GetData());
+                    index_1.GameService.GSLive.Chats.OnRemoveMemberMessages(memberDeletedInfo.GetTo(), memberDeletedInfo.GetText());
+                    break;
+                case Consts_1.Actions.Command.ActionGetAggPrivateMessages:
+                    let aggMegs = JSON.parse(packet.GetData());
+                    index_1.GameService.GSLive.Chats.onGetAggrigatedPrivateMessages(aggMegs);
+                    break;
+                case Consts_1.Actions.Command.ActionEditMessage:
+                    let editedMsg = new models_2.Message();
+                    editedMsg.Parse(packet.GetData());
+                    if (editedMsg.GetIsPrivate())
+                        index_1.GameService.GSLive.Chats.OnEditPrivateMessage(editedMsg);
+                    else
+                        index_1.GameService.GSLive.Chats.OnEditChannelMessage(editedMsg);
+                    break;
+                case Consts_1.Actions.Command.ActionGetContactPrivateMessages:
+                    let contact = JSON.parse(packet.GetData());
+                    index_1.GameService.GSLive.Chats.onContactPrivateMessages(contact);
                     break;
                 // ---- Create Room ---- //
                 case Consts_1.Actions.Command.ActionAutoMatch:
@@ -114,6 +169,21 @@ class Command {
                     let result = JSON.parse(packet.GetData());
                     index_1.GameService.GSLive.TurnBased.OnFindMemberReceived(result);
                     index_1.GameService.GSLive.RealTime.OnFindMemberReceived(result);
+                    break;
+                case Consts_1.Actions.Command.ActionPushEvent:
+                    let event = new models_3.Event();
+                    event.Parse(packet.GetData());
+                    index_1.GameService.GSLive.Events.onPushEvent(event);
+                    break;
+                case Consts_1.Actions.Command.ActionGetUserEvents:
+                    let t = JSON.parse(packet.GetData());
+                    let events = [];
+                    for (let i = 0; i < t.length; i++) {
+                        let event = new models_3.Event();
+                        event.Parse(packet.GetData());
+                        events.push(event);
+                    }
+                    index_1.GameService.GSLive.Events.onGetMemberEvents(events);
                     break;
                 case Consts_1.Actions.Error:
                     console.error(`[Command] [Error] [Msg: ${packet.GetMsg()}]`);
