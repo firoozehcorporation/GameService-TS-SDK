@@ -197,7 +197,7 @@ export class Command {
                 let events = [];
                 for (let i = 0; i < t.length; i++) {
                     let event = new Event();
-                    event.Parse(packet.GetData()!)
+                    event.RawParse(t[i])
                     events.push(event)
                 }
                 GameService.GSLive.Events.onGetMemberEvents(events);

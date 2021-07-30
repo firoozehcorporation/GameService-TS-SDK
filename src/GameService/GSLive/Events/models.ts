@@ -1,12 +1,12 @@
 export class Event {
     constructor() { }
 
-    private IsTag: boolean | undefined
-    GetIsTag(): boolean | undefined {
-        return this.IsTag;
+    private SendType: number | undefined
+    GetSendType(): number | undefined {
+        return this.SendType;
     }
-    SetIsTag(IsTag: boolean) {
-        this.IsTag = IsTag;
+    SetSendType(SendType: number) {
+        this.SendType = SendType;
     }
 
     private To: string | undefined
@@ -25,29 +25,38 @@ export class Event {
         this.Text = Text;
     }
 
-    private Time: number | undefined
-    GetTime(): number | undefined {
-        return this.Time;
+    private SendAt: number | undefined
+    GetSendAt(): number | undefined {
+        return this.SendAt;
     }
-    SetTime(Time: number) {
-        this.Time = Time;
+    SetSendAt(SendAt: number) {
+        this.SendAt = SendAt;
     }
 
-    private Buffering: boolean | undefined
-    GetBuffering(): boolean | undefined {
+    private Buffering: number | undefined
+    GetBuffering(): number | undefined {
         return this.Buffering;
     }
-    SetBuffering(Buffering: boolean) {
+    SetBuffering(Buffering: number) {
         this.Buffering = Buffering;
+    }
+    
+    private CreatedAt: number | undefined
+    GetCreatedAt(): number | undefined {
+        return this.CreatedAt;
+    }
+    SetCreatedAt(CreatedAt: number) {
+        this.CreatedAt = CreatedAt;
     }
 
     private Cast() {
         return {
-            "0": this.IsTag,
+            "0": this.SendType,
             "1": this.To,
             "2": this.Text,
-            "3": this.Time,
-            "4": this.Buffering
+            "3": this.SendAt,
+            "4": this.Buffering,
+            "5": this.CreatedAt
         }
     }
 
@@ -57,11 +66,12 @@ export class Event {
     }
 
     public RawParse(inputJ: any) {
-        this.SetIsTag(inputJ["0"]);
+        this.SetSendType(inputJ["0"]);
         this.SetTo(inputJ["1"]);
         this.SetText(inputJ["2"]);
-        this.SetTime(inputJ["3"]);
+        this.SetSendAt(inputJ["3"]);
         this.SetBuffering(inputJ["4"]);
+        this.SetCreatedAt(inputJ["5"]);
     }
 
     ToString(): string {

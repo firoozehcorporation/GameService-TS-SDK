@@ -180,7 +180,7 @@ class Command {
                     let events = [];
                     for (let i = 0; i < t.length; i++) {
                         let event = new models_3.Event();
-                        event.Parse(packet.GetData());
+                        event.RawParse(t[i]);
                         events.push(event);
                     }
                     index_1.GameService.GSLive.Events.onGetMemberEvents(events);
