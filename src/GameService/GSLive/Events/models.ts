@@ -17,6 +17,14 @@ export class Event {
         this.To = To;
     }
 
+    private From: string | undefined
+    GetFrom(): string | undefined {
+        return this.From;
+    }
+    SetFrom(From: string) {
+        this.From = From;
+    }
+
     private Text: string | undefined
     GetText(): string | undefined {
         return this.Text;
@@ -40,7 +48,7 @@ export class Event {
     SetBuffering(Buffering: number) {
         this.Buffering = Buffering;
     }
-    
+
     private CreatedAt: number | undefined
     GetCreatedAt(): number | undefined {
         return this.CreatedAt;
@@ -56,7 +64,8 @@ export class Event {
             "2": this.Text,
             "3": this.SendAt,
             "4": this.Buffering,
-            "5": this.CreatedAt
+            "5": this.CreatedAt,
+            "6": this.From
         }
     }
 
@@ -72,6 +81,7 @@ export class Event {
         this.SetSendAt(inputJ["3"]);
         this.SetBuffering(inputJ["4"]);
         this.SetCreatedAt(inputJ["5"]);
+        this.SetFrom(inputJ["6"]);
     }
 
     ToString(): string {
