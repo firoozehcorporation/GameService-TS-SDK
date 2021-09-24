@@ -72,7 +72,10 @@ enum CommandActions {
     ActionGetContactPrivateMessages = 28,
 
     ActionPushEvent = 29,
-    ActionGetUserEvents = 30
+    ActionGetUserEvents = 30,
+
+    ActionRoleDetail = 31,
+    ActionEditRoom = 32,
 }
 
 enum TurnBasedActions {
@@ -91,6 +94,8 @@ enum TurnBasedActions {
     ModifyRoomValue = 16,
     GetRoomInfo = 14,
     GetMemberSnapShot = 15,
+    ActionPublicMessage = 16,
+    ActionPrivateMessage = 17,
 }
 
 enum RealTimeActions {

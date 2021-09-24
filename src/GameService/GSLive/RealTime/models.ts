@@ -42,6 +42,17 @@ export class AutoMatchOptions {
     extra: string | null
 }
 
+
+export interface EditRoomOptions {
+    name?: string
+    role?: string
+    minPlayer?: number
+    maxPlayer?: number
+    isPersist?: boolean
+    isPrivate?: boolean
+    password?: string
+}
+
 export enum GProtocolSendType {
     UnReliable = 0,
     Reliable = 1,

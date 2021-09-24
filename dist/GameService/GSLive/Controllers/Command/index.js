@@ -40,7 +40,6 @@ class Command {
             var _a;
             let packet = new models_1.Packet();
             packet.Parse(event.data, index_1.GameService.GSLive.Cipher != "" && this.commandToken != "");
-            // console.log(packet.Export())
             switch (packet.GetHead()) {
                 case Consts_1.Actions.Command.ActionAuth:
                     this.commandToken = packet.GetToken();
@@ -152,6 +151,14 @@ class Command {
                     this.isInAutoMatchQueue = false;
                     break;
                 case Consts_1.Actions.Command.ActionGetRooms:
+                    let rooms = JSON.parse(packet.GetData());
+                    index_1.GameService.GSLive.RealTime.OnAvailableRoomsReceived(rooms);
+                    index_1.GameService.GSLive.TurnBased.OnAvailableRoomsReceived(rooms);
+                    break;
+                case Consts_1.Actions.Command.ActionRoleDetail:
+                    let roleDetail = JSON.parse(packet.GetData());
+                    index_1.GameService.GSLive.RealTime.OnRoleDetail(roleDetail);
+                    index_1.GameService.GSLive.TurnBased.OnRoleDetail(roleDetail);
                     break;
                 case Consts_1.Actions.Command.ActionJoinRoom:
                     // connect to relay
@@ -184,6 +191,11 @@ class Command {
                         events.push(event);
                     }
                     index_1.GameService.GSLive.Events.onGetMemberEvents(events);
+                    break;
+                case Consts_1.Actions.Command.ActionEditRoom:
+                    let newRoomData = JSON.parse(packet.GetData());
+                    index_1.GameService.GSLive.TurnBased.onEditRoom(newRoomData);
+                    index_1.GameService.GSLive.RealTime.onEditRoom(newRoomData);
                     break;
                 case Consts_1.Actions.Error:
                     console.error(`[Command] [Error] [Msg: ${packet.GetMsg()}]`);

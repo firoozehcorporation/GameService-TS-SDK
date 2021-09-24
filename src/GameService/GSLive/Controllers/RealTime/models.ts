@@ -148,6 +148,11 @@ export class Data {
     private _Extra: Uint8Array = new Uint8Array()
     public GetExtra(): any {
         let b = Buffer.from(this._Extra);
+        if (this._Extra.length == 0 )
+        return {
+            Type: 0,
+            Action: 0
+        }
         return {
             Type: b.readUInt8(),
             Action: b.readUInt8(1)
@@ -310,10 +315,10 @@ export enum Types {
 }
 
 export enum Operations {
-    SetMemberProperty = 0x2,
-    DelMemberProperty = 0x3,
-    SetRoomProperty = 0x0,
-    DelRoomProperty = 0x1,
+    SetRoomProperty = 0x2,
+    DelRoomProperty = 0x3,
+    SetMemberProperty = 0x0,
+    DelMemberProperty = 0x1,
 
     BufferedFunction = 0x2,
 
@@ -367,7 +372,7 @@ export class AuthPayload {
 
 export class JoinPayload {
     JoinType: number | undefined
-    Room: object | undefined
+    Room: any | undefined
     UserJoined: object | undefined
     JoinMemberOrder: number | undefined
 
@@ -384,6 +389,7 @@ export class JoinPayload {
         this.JoinType = inputJ["1"]
         let room = new Room();
         room.Parse(inputJ["2"])
+
         this.Room = room.Export()
         this.UserJoined = inputJ["3"]
         this.JoinMemberOrder = inputJ["4"]

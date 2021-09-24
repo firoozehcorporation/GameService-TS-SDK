@@ -47,5 +47,4 @@ export class Events {
 
     public onPushEvent: (event: object) => void = () => { };
     public onGetMemberEvents: (events: object[]) => void = () => { };
-
 }

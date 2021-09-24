@@ -4,6 +4,7 @@ import { PropertyType, CreateRoomOptions, AutoMatchOptions, Data as TurnData, Ou
 import { JoinDetail, Packet as TurnPacket, PropertyChange } from '../Controllers/ُTurnBased/models';
 import { Data, Packet } from '../Controllers/Command/models';
 import { Member } from '../../Player/models';
+import { EditRoomOptions } from '../RealTime/models';
 
 export class TurnBased {
     constructor() { }
@@ -28,6 +29,29 @@ export class TurnBased {
 
         let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionCreateRoom);
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
+        pkt.SetData(data.ToString())
+        pkt.Send()
+    }
+
+    public async EditRoom(options: EditRoomOptions) {
+        if (GameService.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
+        let data = new Data();
+        data.SetID(GameService.GSLive.TurnbasedController.RoomID)
+        data.SetMax(options.maxPlayer!);
+        data.SetMin(options.minPlayer!);
+        data.SetName(options.name!);
+        data.SetPassword(options.password!);
+        data.SetRole(options.role!);
+        data.SetPersist(options.isPersist!);
+        data.SetPrivate(options.isPrivate!);
+
+        let pkt = new Packet();
+        pkt.SetHead(Actions.Command.ActionEditRoom);
         pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString())
         pkt.Send()
@@ -73,9 +97,22 @@ export class TurnBased {
         let data = new Data();
         data.SetMax(limit);
         data.SetRole(role);
+        data.SetSyncMode(1)
 
         let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionGetRooms);
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
+        pkt.SetData(data.ToString());
+        pkt.Send()
+    }
+
+    public async GetRoleDetail(role: string) {
+        let data = new Data();
+        data.SetRole(role);
+        data.SetSyncMode(1)
+
+        let pkt = new Packet();
+        pkt.SetHead(Actions.Command.ActionRoleDetail);
         pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
@@ -212,6 +249,35 @@ export class TurnBased {
         pkt.Send();
     }
 
+    public async SendPrivateMessage(data: string, targetMember: string) {
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
+        let dataIn = new TurnData();
+        dataIn.Next = targetMember;
+        dataIn.Data = data;
+
+        let pkt = new TurnPacket();
+        pkt.SetHead(Actions.TurnBased.ActionPrivateMessage);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetData(dataIn.ToString());
+        pkt.Send();
+    }
+
+    public async SendPublicMessage(data: string) {
+        if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
+            throw "User is not in any game room";
+
+        let dataIn = new TurnData();
+        dataIn.Data = data
+
+        let pkt = new TurnPacket();
+        pkt.SetHead(Actions.TurnBased.ActionPublicMessage);
+        pkt.SetToken(GameService.GSLive.TurnbasedController.turnbasedToken);
+        pkt.SetData(dataIn.ToString());
+        pkt.Send();
+    }
+
     public async GetCurrentTurnMember() {
         if (GameService.GSLive.TurnbasedController.RoomID.length < 1)
             throw "User is not in any game room";
@@ -324,17 +390,21 @@ export class TurnBased {
     public OnAutoMatchUpdated: (e: any) => void = () => { };
     public OnAutoMatchCanceled: (e: string) => void = () => { };
     public OnAvailableRoomsReceived: (e: object[]) => void = () => { };
+    public OnRoleDetail: (e: any) => void = () => { };
     public OnFindMemberReceived: (e: object[]) => void = () => { };
     public NewInviteReceived: (e: any) => void = () => { }
-    public OnInvitationSent: (e: object) => void = () => { };
+    public OnInvitationSent: (detail: object) => void = () => { };
     public OnInviteInboxReceived: (invites: object[]) => void = () => { };
     public OnCurrentRoomInfoReceived: (roomData: any) => void = () => { };
     public OnRoomMembersDetailReceived: (members: any[]) => void = () => { };
     public OnChoosedNext: (whoIsNext: object) => void = () => { };
     public OnTakeTurn: (sender: object, turn: object) => void = () => { };
+    public onPublicMessage: (sender: string, data: string) => void = () => { };
+    public onPrivateMessage: (sender: string, data: string) => void = () => { };
     public OnCurrentTurnMember: (currentMember: Member) => void = () => { };
     public OnVoteReceived: (sender: object, vote: object) => void = () => { };
     public OnComplete: (gameResult: object) => void = () => { };
     public OnPropertyUpdated: (payload: PropertyChange) => void = () => { };
     public OnLeaveRoom: (member: any) => void = () => { };
+    public onEditRoom: (newRoomData: any) => void = () => { }
 }

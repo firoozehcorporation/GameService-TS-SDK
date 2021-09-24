@@ -37,11 +37,20 @@ class TurnBased {
                     let joinData = JSON.parse(packet.GetData());
                     let joinDetail = new models_2.JoinDetail();
                     joinDetail.Parse(joinData);
+                    index_1.GameService.GSLive.TurnbasedController.RoomID = joinDetail.Room.ID;
                     index_1.GameService.GSLive.TurnBased.OnJoinedRoom(joinDetail.Export());
                     break;
                 case Consts_1.Actions.TurnBased.ActionTakeTurn:
                     let turnData = JSON.parse(packet.GetData());
                     index_1.GameService.GSLive.TurnBased.OnTakeTurn(turnData["1"], turnData[0]);
+                    break;
+                case Consts_1.Actions.TurnBased.ActionPublicMessage:
+                    let publicData = JSON.parse(packet.GetData());
+                    index_1.GameService.GSLive.TurnBased.onPublicMessage(publicData["1"], publicData[2]);
+                    break;
+                case Consts_1.Actions.TurnBased.ActionPrivateMessage:
+                    let privateData = JSON.parse(packet.GetData());
+                    index_1.GameService.GSLive.TurnBased.onPrivateMessage(privateData["1"], privateData[2]);
                     break;
                 case Consts_1.Actions.TurnBased.ActionChooseNext:
                     let nextData = JSON.parse(packet.GetData());

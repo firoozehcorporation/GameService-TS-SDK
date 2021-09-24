@@ -23,6 +23,7 @@ class TurnBased {
         this.OnAutoMatchUpdated = () => { };
         this.OnAutoMatchCanceled = () => { };
         this.OnAvailableRoomsReceived = () => { };
+        this.OnRoleDetail = () => { };
         this.OnFindMemberReceived = () => { };
         this.NewInviteReceived = () => { };
         this.OnInvitationSent = () => { };
@@ -31,11 +32,14 @@ class TurnBased {
         this.OnRoomMembersDetailReceived = () => { };
         this.OnChoosedNext = () => { };
         this.OnTakeTurn = () => { };
+        this.onPublicMessage = () => { };
+        this.onPrivateMessage = () => { };
         this.OnCurrentTurnMember = () => { };
         this.OnVoteReceived = () => { };
         this.OnComplete = () => { };
         this.OnPropertyUpdated = () => { };
         this.OnLeaveRoom = () => { };
+        this.onEditRoom = () => { };
     }
     // Functions
     CreateRoom(options) {
@@ -56,6 +60,28 @@ class TurnBased {
             data.SetSyncMode(1);
             let pkt = new models_3.Packet();
             pkt.SetHead(Consts_1.Actions.Command.ActionCreateRoom);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(data.ToString());
+            pkt.Send();
+        });
+    }
+    EditRoom(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (__1.GameService.GSLive.Command.commandToken == "")
+                throw "User not connected to Command Server";
+            if (__1.GameService.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
+            let data = new models_3.Data();
+            data.SetID(__1.GameService.GSLive.TurnbasedController.RoomID);
+            data.SetMax(options.maxPlayer);
+            data.SetMin(options.minPlayer);
+            data.SetName(options.name);
+            data.SetPassword(options.password);
+            data.SetRole(options.role);
+            data.SetPersist(options.isPersist);
+            data.SetPrivate(options.isPrivate);
+            let pkt = new models_3.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionEditRoom);
             pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
             pkt.SetData(data.ToString());
             pkt.Send();
@@ -102,8 +128,21 @@ class TurnBased {
             let data = new models_3.Data();
             data.SetMax(limit);
             data.SetRole(role);
+            data.SetSyncMode(1);
             let pkt = new models_3.Packet();
             pkt.SetHead(Consts_1.Actions.Command.ActionGetRooms);
+            pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
+            pkt.SetData(data.ToString());
+            pkt.Send();
+        });
+    }
+    GetRoleDetail(role) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = new models_3.Data();
+            data.SetRole(role);
+            data.SetSyncMode(1);
+            let pkt = new models_3.Packet();
+            pkt.SetHead(Consts_1.Actions.Command.ActionRoleDetail);
             pkt.SetToken(__1.GameService.GSLive.Command.commandToken);
             pkt.SetData(data.ToString());
             pkt.Send();
@@ -227,6 +266,33 @@ class TurnBased {
             dataIn.Data = data;
             let pkt = new models_2.Packet();
             pkt.SetHead(Consts_1.Actions.TurnBased.ActionTakeTurn);
+            pkt.SetToken(__1.GameService.GSLive.TurnbasedController.turnbasedToken);
+            pkt.SetData(dataIn.ToString());
+            pkt.Send();
+        });
+    }
+    SendPrivateMessage(data, targetMember) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (__1.GameService.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
+            let dataIn = new models_1.Data();
+            dataIn.Next = targetMember;
+            dataIn.Data = data;
+            let pkt = new models_2.Packet();
+            pkt.SetHead(Consts_1.Actions.TurnBased.ActionPrivateMessage);
+            pkt.SetToken(__1.GameService.GSLive.TurnbasedController.turnbasedToken);
+            pkt.SetData(dataIn.ToString());
+            pkt.Send();
+        });
+    }
+    SendPublicMessage(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (__1.GameService.GSLive.TurnbasedController.RoomID.length < 1)
+                throw "User is not in any game room";
+            let dataIn = new models_1.Data();
+            dataIn.Data = data;
+            let pkt = new models_2.Packet();
+            pkt.SetHead(Consts_1.Actions.TurnBased.ActionPublicMessage);
             pkt.SetToken(__1.GameService.GSLive.TurnbasedController.turnbasedToken);
             pkt.SetData(dataIn.ToString());
             pkt.Send();

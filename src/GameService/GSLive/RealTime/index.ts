@@ -1,7 +1,7 @@
 import { GameService } from '../..';
 import { Log } from '../../../Utils/Logger';
 import { Actions } from '../../../Utils/Consts';
-import { CreateRoomOptions, AutoMatchOptions, GProtocolSendType, EventPayload } from './models';
+import { CreateRoomOptions, AutoMatchOptions, GProtocolSendType, EventPayload, EditRoomOptions } from './models';
 import { Data, Packet, Payload } from '../Controllers/Command/models';
 import { Packet as RtPacket, Data as RtData, StringToBuffer, Types, Operations } from '../Controllers/RealTime/models';
 export class RealTime {
@@ -27,6 +27,29 @@ export class RealTime {
 
         let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionCreateRoom);
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
+        pkt.SetData(data.ToString())
+        pkt.Send()
+    }
+
+    public async EditRoom(options: EditRoomOptions) {
+        if (GameService.GSLive.Command.commandToken == "")
+            throw "User not connected to Command Server";
+        if (GameService.GSLive.RealTimeController.RoomID.length < 1)
+            throw "User is not in any game room";
+
+        let data = new Data();
+        data.SetID(GameService.GSLive.RealTimeController.RoomID)
+        data.SetMax(options.maxPlayer!);
+        data.SetMin(options.minPlayer!);
+        data.SetName(options.name!);
+        data.SetPassword(options.password!);
+        data.SetRole(options.role!);
+        data.SetPersist(options.isPersist!);
+        data.SetPrivate(options.isPrivate!);
+
+        let pkt = new Packet();
+        pkt.SetHead(Actions.Command.ActionEditRoom);
         pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString())
         pkt.Send()
@@ -73,9 +96,22 @@ export class RealTime {
         let data = new Data();
         data.SetMax(limit);
         data.SetRole(role);
+        data.SetSyncMode(2)
 
         let pkt = new Packet();
         pkt.SetHead(Actions.Command.ActionGetRooms);
+        pkt.SetToken(GameService.GSLive.Command.commandToken)
+        pkt.SetData(data.ToString());
+        pkt.Send()
+    }
+
+    public async GetRoleDetail(role: string) {
+        let data = new Data();
+        data.SetRole(role)
+        data.SetSyncMode(2)
+
+        let pkt = new Packet();
+        pkt.SetHead(Actions.Command.ActionRoleDetail);
         pkt.SetToken(GameService.GSLive.Command.commandToken)
         pkt.SetData(data.ToString());
         pkt.Send()
@@ -339,13 +375,16 @@ export class RealTime {
     public OnJoinedRoom: (joinData: any) => void = () => { };
     public OnAutoMatchUpdated: (e: any) => void = () => { };
     public OnAutoMatchCanceled: (e: string) => void = () => { };
-    public OnAvailableRoomsReceived: (sender: object, e: object[]) => void = () => { };
+    public OnAvailableRoomsReceived: (e: object[]) => void = () => { };
+    public OnRoleDetail: (detail: any) => void = () => { };
     public OnFindMemberReceived: (e: object[]) => void = () => { };
     public OnInvitationSent: (sender: object, e: object) => void = () => { };
 
+    public OnSnapShot: (snapshot: any) => void = () => { }
     public CurrentRoomInfoReceived: (roomData: any) => void = () => { }
     public RoomMembersDetailReceived: (members: any[]) => void = () => { }
     public NewMessageReceived: (event: any) => void = () => { }
     public OnLeaveRoom: (member: any) => void = () => { }
     public OnPropertyEvent: (PropertyUpdate: any) => void = () => { }
+    public onEditRoom: (newRoomData: any) => void = () => { }
 }

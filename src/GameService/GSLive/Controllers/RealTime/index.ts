@@ -46,7 +46,7 @@ export class RealTime {
 
     protected OnReceive = (event: WebSocket.MessageEvent) => {
         let packet = new Packet()
-        packet.Deserialize(Buffer.from(event.data.toString(), "base64"));
+        packet.Deserialize(event.data as Buffer);
 
         switch (packet.Action) {
             case Actions.RealTime.ActionAuth:
@@ -82,6 +82,8 @@ export class RealTime {
             case Actions.RealTime.ActionJoin:
                 let payload = new JoinPayload()
                 payload.Parse(JSON.parse(BufferToString(packet.Payload!)))
+                this.RoomID = payload.Room!.ID;
+                GameService.GSLive.RealTimeController.RoomID = payload.Room!.ID;
                 GameService.GSLive.RealTime.OnJoinedRoom(payload.Export())
                 break
             case Actions.RealTime.ActionMembersDetail:
@@ -122,9 +124,10 @@ export class RealTime {
                     Type: evM.GetExtra().Type,
                 })
                 break
-            // case Actions.RealTime.ActionGetRoomSnapshot:
-            //     console.log("ActionGetRoomSnapshot", BufferToString(packet.Payload!))
-            //     break
+            case Actions.RealTime.ActionGetRoomSnapshot:
+                let snapshot = JSON.parse(BufferToString(packet.Payload!));
+                GameService.GSLive.RealTime.OnSnapShot(snapshot)
+                break
             // case Actions.RealTime.ActionObserver:
 
             //     break

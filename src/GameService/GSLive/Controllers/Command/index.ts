@@ -52,7 +52,6 @@ export class Command {
     protected OnReceive = async (event: nWebSocket.MessageEvent) => {
         let packet = new Packet()
         packet.Parse(event.data, GameService.GSLive.Cipher != "" && this.commandToken != "");
-        // console.log(packet.Export())
 
         switch (packet.GetHead()) {
             case Actions.Command.ActionAuth:
@@ -166,13 +165,20 @@ export class Command {
                 this.isInAutoMatchQueue = false;
                 break
             case Actions.Command.ActionGetRooms:
-
+                let rooms = JSON.parse(packet.GetData()!);
+                GameService.GSLive.RealTime.OnAvailableRoomsReceived(rooms)
+                GameService.GSLive.TurnBased.OnAvailableRoomsReceived(rooms)
                 break
+            case Actions.Command.ActionRoleDetail:
+                let roleDetail = JSON.parse(packet.GetData()!);
+                GameService.GSLive.RealTime.OnRoleDetail(roleDetail)
+                GameService.GSLive.TurnBased.OnRoleDetail(roleDetail)
+                break
+
             case Actions.Command.ActionJoinRoom:
                 // connect to relay
                 let start = new StartGame();
                 start.parse(packet.GetData()!)
-
                 if (start.Room!["syncMode"] == 1)
                     await GameService.GSLive.TurnbasedController.Initilize(start.Room!["_id"], start.Area!.Endpoint, start.Area!.Port)
                 else
@@ -201,6 +207,11 @@ export class Command {
                     events.push(event)
                 }
                 GameService.GSLive.Events.onGetMemberEvents(events);
+                break
+            case Actions.Command.ActionEditRoom:
+                let newRoomData = JSON.parse(packet.GetData()!);
+                GameService.GSLive.TurnBased.onEditRoom(newRoomData);
+                GameService.GSLive.RealTime.onEditRoom(newRoomData);
                 break
             case Actions.Error:
                 console.error(`[Command] [Error] [Msg: ${packet.GetMsg()}]`)

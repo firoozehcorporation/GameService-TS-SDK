@@ -194,7 +194,7 @@ export class Chats {
         pkt.SetData(payload.ToString())
         pkt.Send();
     }
-    public OnRemoveMemberMessages: (channelName: string, memberID: string) => void = () => { };
+    public OnRemoveMemberMessages: (channelName: string, messageID: string) => void = () => { };
 
     public async GetAggrigatedPrivateMessages() {
         let pkt = new Packet();

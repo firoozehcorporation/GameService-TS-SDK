@@ -72,6 +72,8 @@ var CommandActions;
     CommandActions[CommandActions["ActionGetContactPrivateMessages"] = 28] = "ActionGetContactPrivateMessages";
     CommandActions[CommandActions["ActionPushEvent"] = 29] = "ActionPushEvent";
     CommandActions[CommandActions["ActionGetUserEvents"] = 30] = "ActionGetUserEvents";
+    CommandActions[CommandActions["ActionRoleDetail"] = 31] = "ActionRoleDetail";
+    CommandActions[CommandActions["ActionEditRoom"] = 32] = "ActionEditRoom";
 })(CommandActions || (CommandActions = {}));
 var TurnBasedActions;
 (function (TurnBasedActions) {
@@ -90,6 +92,8 @@ var TurnBasedActions;
     TurnBasedActions[TurnBasedActions["ModifyRoomValue"] = 16] = "ModifyRoomValue";
     TurnBasedActions[TurnBasedActions["GetRoomInfo"] = 14] = "GetRoomInfo";
     TurnBasedActions[TurnBasedActions["GetMemberSnapShot"] = 15] = "GetMemberSnapShot";
+    TurnBasedActions[TurnBasedActions["ActionPublicMessage"] = 16] = "ActionPublicMessage";
+    TurnBasedActions[TurnBasedActions["ActionPrivateMessage"] = 17] = "ActionPrivateMessage";
 })(TurnBasedActions || (TurnBasedActions = {}));
 var RealTimeActions;
 (function (RealTimeActions) {
